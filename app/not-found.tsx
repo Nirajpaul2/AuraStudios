@@ -1,0 +1,1 @@
+export default function NotFound(){return <main className="section inner-page"><p className="eyebrow">A FRAME OUT OF PLACE</p><h1>This story<br/>isn’t <em>here.</em></h1><p className="intro">The page may have moved or is no longer available.</p><a className="button gold" href="/">Return to the studio ↗</a></main>;}

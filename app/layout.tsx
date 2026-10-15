@@ -1,0 +1,4 @@
+import type { Metadata } from 'next';
+import './globals.css';
+export const metadata:Metadata={metadataBase:new URL('https://aure-cinematic-studio.nirajpaul2.chatgpt.site'),title:{default:'Auré Studio — Photography, Films & AI Cinematics',template:'%s | Auré Studio'},description:'Honest photographs. Cinematic films. Explore wedding stories, creative filmmaking, and AI editing possibilities with Auré Studio.',openGraph:{title:'Auré Studio — Every frame, a feeling.',description:'Photography. Films. A feeling that stays.',images:[{url:'/images/hero-sunset.jpg',width:1800,height:1200}],type:'website'},icons:{icon:'/favicon.svg'}};
+export default function Layout({children}:{children:React.ReactNode}){return <html lang="en"><body>{children}</body></html>;}

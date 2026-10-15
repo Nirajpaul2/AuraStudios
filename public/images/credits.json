@@ -1,0 +1,79 @@
+[
+  {
+    "file": "hero.jpg",
+    "id": "photo-1722952934661-dde241aeb591",
+    "width": 1800,
+    "source": "https://unsplash.com/photos/a-bride-and-groom-posing-for-a-picture-Y3QEAct9JT4",
+    "photographer": "ARTO SURAJ",
+    "description": "Indian wedding couple in red lehenga and sherwani",
+    "license": "Unsplash License",
+    "licenseUrl": "https://unsplash.com/license",
+    "imageUrl": "https://images.unsplash.com/photo-1722952934661-dde241aeb591?auto=format&fit=max&fm=jpg&q=82&w=1800"
+  },
+  {
+    "file": "wedding-1.jpg",
+    "id": "photo-1667522594484-cdd8dc95fbee",
+    "width": 900,
+    "source": "https://unsplash.com/photos/a-person-wearing-a-colorful-headdress-and-a-colorful-dress-VWB7quBYgLc",
+    "photographer": "ARTO SURAJ",
+    "description": "Indian bride in red with ornate gold jewelry during the ceremony",
+    "license": "Unsplash License",
+    "licenseUrl": "https://unsplash.com/license",
+    "imageUrl": "https://images.unsplash.com/photo-1667522594484-cdd8dc95fbee?auto=format&fit=max&fm=jpg&q=82&w=900"
+  },
+  {
+    "file": "portrait.jpg",
+    "id": "photo-1673413349218-ba4de23c2958",
+    "width": 900,
+    "source": "https://unsplash.com/photos/a-woman-in-a-sari-and-jewelry-posing-for-a-picture-wrRVsNyuCW4",
+    "photographer": "Akash Gurle",
+    "description": "Bride in traditional sari and jewelry",
+    "license": "Unsplash License",
+    "licenseUrl": "https://unsplash.com/license",
+    "imageUrl": "https://images.unsplash.com/photo-1673413349218-ba4de23c2958?auto=format&fit=max&fm=jpg&q=82&w=900"
+  },
+  {
+    "file": "wedding-2.jpg",
+    "id": "photo-1765881312316-a9dc81ba1065",
+    "width": 900,
+    "source": "https://unsplash.com/photos/bride-smiles-surrounded-by-her-friends-in-traditional-indian-attire-jljkt24iZVk",
+    "photographer": "Sabesh Photography LTD",
+    "description": "Bride laughing with friends at Indian wedding",
+    "license": "Unsplash License",
+    "licenseUrl": "https://unsplash.com/license",
+    "imageUrl": "https://images.unsplash.com/photo-1765881312316-a9dc81ba1065?auto=format&fit=max&fm=jpg&q=82&w=900"
+  },
+  {
+    "file": "celebration.jpg",
+    "id": "photo-1482731910308-31e96e5d1d28",
+    "width": 900,
+    "source": "https://unsplash.com/photos/photo-of-birthday-birth-about-to-blow-birthday-candles-XmefirQLMfY",
+    "photographer": "Sergei Solo",
+    "description": "Candlelit birthday celebration with warm bokeh",
+    "license": "Unsplash License",
+    "licenseUrl": "https://unsplash.com/license",
+    "imageUrl": "https://images.unsplash.com/photo-1482731910308-31e96e5d1d28?auto=format&fit=max&fm=jpg&q=82&w=900"
+  },
+  {
+    "file": "landscape.jpg",
+    "id": "photo-1729188430272-25eff8302c0e",
+    "width": 900,
+    "source": "https://unsplash.com/photos/a-scenic-view-of-a-lake-and-mountains-9qkqCRZgMa8",
+    "photographer": "Brianna Parks",
+    "description": "Golden hour lake and mountain landscape",
+    "license": "Unsplash License",
+    "licenseUrl": "https://unsplash.com/license",
+    "imageUrl": "https://images.unsplash.com/photo-1729188430272-25eff8302c0e?auto=format&fit=max&fm=jpg&q=82&w=900"
+  },
+  {
+    "file": "hero-sunset.jpg",
+    "id": "photo-1547911139-c06c87da7115",
+    "width": 1800,
+    "source": "https://unsplash.com/photos/wedded-couple-face-to-face-with-each-other-on-grass-field-during-golden-hour-rQSauuUzx0w",
+    "photographer": "Anna Vi",
+    "description": "Wedding couple embracing in a field at golden hour",
+    "license": "Unsplash License",
+    "licenseUrl": "https://unsplash.com/license",
+    "imageUrl": "https://images.unsplash.com/photo-1547911139-c06c87da7115?auto=format&fit=max&fm=jpg&q=82&w=1800"
+  }
+]
