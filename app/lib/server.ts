@@ -3,7 +3,7 @@ import { getChatGPTUser } from '../chatgpt-auth';
 import { defaults, references, sampleImages, serviceIdeas, type Item } from './catalog';
 export function db(){if(!env.DB)throw new Error('Database unavailable');return env.DB;}
 export function bucket(){if(!env.BUCKET)throw new Error('Media storage unavailable');return env.BUCKET;}
-export function config(name:string){return (env as unknown as Record<string,string|undefined>)[name]||'';}
+export function config(name:string){return (env as unknown as Record<string,string|undefined>)[name]||(typeof process!=='undefined'&&process.env?.[name])||'';}
 export async function identity(){return getChatGPTUser();}
 export async function admin(){const user=await identity();return !!user&&config('ADMIN_USER_IDS').split(',').map(s=>s.trim()).filter(Boolean).includes(user.userId);}
 export async function catalog(){let rows:{id:string;data:string;kind:string}[]=[];let settings=defaults;try{rows=(await db().prepare('SELECT id,kind,data FROM content WHERE published=1').all<{id:string;kind:string;data:string}>()).results;const s=await db().prepare("SELECT data FROM settings WHERE id='site'").first<{data:string}>();if(s)settings={...defaults,...JSON.parse(s.data)};}catch(e){console.error('catalog_read_failed',e);}

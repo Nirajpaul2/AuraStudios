@@ -28,8 +28,44 @@ export async function POST(req:Request,ctx:Context){try{const {path}=await ctx.p
  const jobId=url.searchParams.get('job'),lease=url.searchParams.get('lease');const job=await db().prepare("SELECT video_id FROM processing_jobs WHERE id=? AND lease=? AND status='processing'").bind(jobId,lease).first<{video_id:string}>();if(!job)return result({error:'Invalid job lease'},403);
  if(route==='processor/complete'){const key=await upload(req,'preview');const v=await getVideo(job.video_id);if(!v)return result({error:'Video removed'},404);v.previewKey=key;await db().batch([db().prepare('UPDATE content SET data=? WHERE id=?').bind(JSON.stringify(v),v.id),db().prepare("UPDATE processing_jobs SET status='ready',lease=NULL,updated_at=? WHERE id=?").bind(now(),jobId)]);return result({ok:true});}
  if(route==='processor/fail'){const data=await readJson(req);await db().prepare("UPDATE processing_jobs SET status='failed',error=?,lease=NULL,updated_at=? WHERE id=?").bind(String(data.error||'Processing failed').slice(0,500),now(),jobId).run();return result({ok:true});}return result({error:'Not found'},404);}
- const user=await identity();if(!user)return result({error:'Please sign in to continue'},401);await db().prepare('INSERT INTO users(id,email,created_at) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET email=excluded.email').bind(user.userId,user.email,now()).run();
- if(route==='bookings'){const data=bookingSchema.parse(await readJson(req));const recent=await db().prepare("SELECT COUNT(*) AS count FROM inquiries WHERE user_id=? AND created_at>?").bind(user.userId,new Date(Date.now()-3600000).toISOString()).first<{count:number}>();if((recent?.count||0)>=5)return result({error:'You have sent several inquiries. Please try again later.'},429);const id=crypto.randomUUID();await db().prepare('INSERT INTO inquiries(id,user_id,data,created_at) VALUES(?,?,?,?)').bind(id,user.userId,JSON.stringify(data),now()).run();return result({id,message:'Your inquiry has been saved. You can track it in your account.'},201);}
+async function notifyInquiry(id:string,data:any,userEmail?:string){
+  const targetEmail='nirajpaul1991@gmail.com';
+  const refCode=id.slice(0,8).toUpperCase();
+  const subject=`[Auré Studio] New Booking Inquiry #${refCode} - ${data.name} (${data.eventType})`;
+  const text=`New Booking Inquiry for Auré Studio\n\nReference Code: #${refCode}\nClient Name: ${data.name}\nContact: ${data.contact}\nAccount Email: ${userEmail||'N/A'}\nOccasion: ${data.eventType}\nTarget Date: ${data.date}\nLocation: ${data.location}\nServices: ${Array.isArray(data.services)?data.services.join(', '):data.services}\nBudget: ${data.budget||'Not specified'}\n\nVision / Story:\n${data.message||'No details provided'}\n\nReference Link: ${data.reference||'None'}\nSubmitted: ${now()}`;
+  const resendKey=config('RESEND_API_KEY');
+  if(resendKey){
+    try{
+      await fetch('https://api.resend.com/emails',{
+        method:'POST',
+        headers:{'Authorization':'Bearer '+resendKey,'Content-Type':'application/json'},
+        body:JSON.stringify({
+          from:config('EMAIL_FROM')||'Auré Studio <onboarding@resend.dev>',
+          to:[targetEmail],
+          reply_to:data.contact.includes('@')?data.contact:undefined,
+          subject,
+          text
+        })
+      });
+      console.log(`[Email] Dispatched notification to ${targetEmail} for #${refCode}`);
+      return;
+    }catch(e){console.error('[Email] Resend failed:',e);}
+  }
+  const webhook=config('NOTIFICATION_WEBHOOK');
+  if(webhook){
+    try{
+      await fetch(webhook,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({to:targetEmail,subject,text,data,inquiryId:id})
+      });
+      return;
+    }catch(e){console.error('[Email] Webhook failed:',e);}
+  }
+  console.log(`[Inquiry Alert to ${targetEmail}] #${refCode}:\n${text}`);
+}
+const user=await identity();if(!user)return result({error:'Please sign in to continue'},401);await db().prepare('INSERT INTO users(id,email,created_at) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET email=excluded.email').bind(user.userId,user.email,now()).run();
+ if(route==='bookings'){const data=bookingSchema.parse(await readJson(req));const recent=await db().prepare("SELECT COUNT(*) AS count FROM inquiries WHERE user_id=? AND created_at>?").bind(user.userId,new Date(Date.now()-3600000).toISOString()).first<{count:number}>();if((recent?.count||0)>=5)return result({error:'You have sent several inquiries. Please try again later.'},429);const id=crypto.randomUUID();await db().prepare('INSERT INTO inquiries(id,user_id,data,created_at) VALUES(?,?,?,?)').bind(id,user.userId,JSON.stringify(data),now()).run();try{await notifyInquiry(id,data,user.email);}catch(e){console.error('notify_failed',e);}return result({id,message:'Your inquiry has been saved. You can track it in your account.'},201);}
  if(route==='playback'){const {videoId}=await readJson(req);const v=await getVideo(String(videoId));if(!v?.originalKey)return result({error:'Film unavailable'},404);if(!await admin()&&(!v.published||v.access!=='public'&&!await owns(user.userId,v.id)))return result({error:'Purchase required'},403);if(!config('PLAYBACK_SECRET'))return result({error:'Playback is not configured yet'},503);const exp=Date.now()+300000;const sig=await sign(`${user.userId}:${v.id}:${exp}`,config('PLAYBACK_SECRET'));await db().prepare('INSERT INTO video_watch_history(id,user_id,video_id,created_at) VALUES(?,?,?,?)').bind(crypto.randomUUID(),user.userId,v.id,now()).run();return result({url:`/api/playback/${v.id}?expires=${exp}&token=${sig}`});}
  if(route==='payments/order'){const {videoId}=await readJson(req);const v=await getVideo(String(videoId));if(!v?.published||v.access!=='premium'||!v.originalKey||!v.previewKey||!v.price)return result({error:'This film is not available for purchase'},400);if(await owns(user.userId,v.id))return result({error:'You already own this film. Open My Purchases.'},409);if(!config('RAZORPAY_KEY_ID')||!config('RAZORPAY_KEY_SECRET')||!config('PLAYBACK_SECRET'))return result({error:'Purchases will open when the studio finishes payment and playback setup.'},503);const recent=await db().prepare('SELECT COUNT(*) AS count FROM payment_orders WHERE user_id=? AND created_at>?').bind(user.userId,new Date(Date.now()-3600000).toISOString()).first<{count:number}>();if((recent?.count||0)>10)return result({error:'Please try again later'},429);const o=await razor('orders',{method:'POST',body:JSON.stringify({amount:v.price,currency:'INR',receipt:crypto.randomUUID()})});await db().prepare('INSERT INTO payment_orders(id,user_id,video_id,amount,currency,created_at) VALUES(?,?,?,?,?,?)').bind(o.id,user.userId,v.id,v.price,'INR',now()).run();return result({orderId:o.id,amount:v.price,key:config('RAZORPAY_KEY_ID'),currency:'INR',test:config('RAZORPAY_KEY_ID').startsWith('rzp_test_')});}
  if(route==='payments/verify'){const data=await readJson(req);const order=await db().prepare('SELECT id FROM payment_orders WHERE id=? AND user_id=?').bind(data.razorpay_order_id,user.userId).first<{id:string}>();if(!order||!await verify(order.id+'|'+data.razorpay_payment_id,data.razorpay_signature||'',config('RAZORPAY_KEY_SECRET')))return result({error:'Payment verification failed'},400);const paid=await confirm(data.razorpay_payment_id,user.userId);return result({paid});}
