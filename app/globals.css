@@ -138,6 +138,22 @@
   opacity: 0.5;
 }
 
+/* Hero background framing for coastal beach couple */
+.hero-image {
+  object-position: 72% 38%;
+  filter: brightness(0.92) contrast(1.02);
+}
+@media (max-width: 800px) {
+  .hero-image {
+    object-position: 68% 30%;
+  }
+}
+@media (max-width: 500px) {
+  .hero-image {
+    object-position: 70% 25%;
+  }
+}
+
 /* Hero heading with luminous warm gold italic emphasis */
 .hero h1 em {
   font-style: italic;
