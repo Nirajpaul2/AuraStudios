@@ -14,3 +14,220 @@
 @media(max-width:800px){.menu-button{display:grid;place-items:center;min-width:44px;min-height:44px;padding:10px;touch-action:manipulation}.nav.open{max-height:calc(100svh - 77px);overflow:auto}.collection-strip{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.cinematic-moodboard{gap:12px}.cinematic-moodboard span{font-size:10px}}
 
 .studio-contact{margin:25px 0 32px}.studio-contact>p{color:var(--gold);font-size:11px;letter-spacing:1px;margin-bottom:13px}.contact-options{display:flex;flex-wrap:wrap;gap:16px}.contact-option{border:1px solid var(--border);padding:17px 20px;min-width:215px;background:var(--surface)}.contact-option>span{font-size:17px;letter-spacing:.6px;color:var(--text)}.contact-option>div{display:flex;gap:22px;margin-top:10px}.contact-option a{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-size:12px;color:var(--gold)}.booking-page .studio-contact{margin:25px 0}.booking-page .contact-option{flex:1}@media(max-width:500px){.contact-options{gap:10px}.contact-option{width:100%;min-width:0}}
+
+/* ==========================================================================
+   Phase 1: Luxury Navigation & Hero Polish
+   ========================================================================== */
+
+/* Sticky frosted glass navigation bar */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(20, 22, 19, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Brand mark with ambient gold luminescence on hover */
+.brand {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.brand:hover {
+  transform: translateY(-1px);
+}
+.brand-symbol {
+  display: inline-block;
+  transition: filter 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.brand:hover .brand-symbol {
+  filter: drop-shadow(0 0 14px rgba(207, 181, 138, 0.65));
+  transform: rotate(15deg) scale(1.08);
+}
+
+/* Navigation links with refined spacing and micro-interactions */
+.nav a {
+  position: relative;
+  letter-spacing: 0.8px;
+  font-weight: 500;
+  transition: color 0.25s ease, opacity 0.25s ease;
+}
+.nav a:hover {
+  color: var(--gold);
+}
+.nav a.active {
+  color: var(--gold);
+}
+.nav a.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  width: 24px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  left: calc(50% - 12px);
+  box-shadow: 0 0 10px rgba(207, 181, 138, 0.7);
+  border-radius: 1px;
+}
+
+/* Luxury "Let's create" callout button in navbar */
+.nav-book {
+  position: relative;
+  border: 1px solid rgba(207, 181, 138, 0.45);
+  background: rgba(207, 181, 138, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 2px;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-book:hover {
+  border-color: var(--gold);
+  background: rgba(207, 181, 138, 0.15);
+  color: #f7eedb;
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(207, 181, 138, 0.28);
+}
+.nav-book svg {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-book:hover svg {
+  transform: translate(3px, -3px);
+}
+
+/* "My Library" icon hover effect */
+.library {
+  transition: color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.library:hover {
+  color: var(--gold);
+  transform: translateY(-1px);
+}
+
+/* Mobile navigation overlay with frosted blur */
+@media (max-width: 800px) {
+  .header {
+    height: 77px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .nav.open {
+    background: rgba(18, 21, 16, 0.96);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid rgba(207, 181, 138, 0.25);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
+  }
+}
+
+/* Hero section cinematic atmosphere & film grain touch */
+.hero {
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(207, 181, 138, 0.07) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.5;
+}
+
+/* Hero heading with luminous warm gold italic emphasis */
+.hero h1 em {
+  font-style: italic;
+  color: var(--gold);
+  text-shadow: 0 0 32px rgba(207, 181, 138, 0.38), 0 0 60px rgba(207, 181, 138, 0.15);
+  display: inline-block;
+}
+
+/* Button elevation and luminous hover states */
+.button {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.6px;
+}
+.gold {
+  background: var(--gold);
+  color: #1a1e16;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+.gold:hover {
+  background: #deca9f;
+  color: #141710;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -6px rgba(207, 181, 138, 0.45);
+}
+.outline {
+  border: 1px solid rgba(230, 221, 198, 0.35);
+  background: rgba(20, 22, 19, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.outline:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-2px);
+  background: rgba(207, 181, 138, 0.08);
+  box-shadow: 0 10px 24px -8px rgba(207, 181, 138, 0.25);
+}
+
+/* Floating animated scroll cue */
+.hero-bottom a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: color 0.3s ease;
+}
+.hero-bottom a:hover {
+  color: var(--gold);
+}
+.hero-bottom a span {
+  display: inline-block;
+  animation: floatArrow 2.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes floatArrow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* Hero vertical side badge */
+.hero-side {
+  letter-spacing: 3.5px;
+  opacity: 0.7;
+  transition: opacity 0.3s ease, color 0.3s ease, letter-spacing 0.3s ease;
+}
+.hero-side:hover {
+  opacity: 1;
+  color: var(--gold);
+  letter-spacing: 4px;
+}
+
+/* Discipline banner subtle glassmorphism and pulsing star */
+.discipline {
+  background: rgba(27, 29, 25, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.discipline i {
+  display: inline-block;
+  animation: starPulse 3.5s ease-in-out infinite;
+}
+@keyframes starPulse {
+  0%, 100% {
+    opacity: 0.65;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.28);
+    filter: drop-shadow(0 0 6px var(--gold));
+  }
+}
