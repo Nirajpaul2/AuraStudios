@@ -26,3 +26,116 @@ export const newStudioImages:Item[]=[
 const initialImages:Item[]=[{id:'sample-1',kind:'image',title:'A moment, made timeless',category:'Weddings',image:'/images/wedding-1.jpg',description:'Illustrative photograph • Unsplash',credit:'Licensed reference photography. See image credits.'},{id:'sample-2',kind:'image',title:'The quiet in between',category:'Pre-wedding',image:'/images/wedding-2.jpg',description:'Illustrative photograph • Unsplash'},{id:'sample-3',kind:'image',title:'Little moments. Big feelings.',category:'Celebrations',image:'/images/celebration.jpg',description:'Illustrative photograph • Unsplash'},{id:'sample-4',kind:'image',title:'A story in every glance',category:'Portraits',image:'/images/portrait.jpg',description:'Illustrative photograph • Unsplash'},...collectionImages];
 export const sampleImages:Item[]=[...newStudioImages,...initialImages];
 export const serviceIdeas:Item[]=[{id:'wedding',kind:'service',title:'Wedding stories',category:'Weddings',description:'From the first look to the last dance. Photography and films shaped around your celebration.',image:'/images/wedding-1.jpg',inclusions:'Photography & cinematic films\nCoverage tailored to your celebration\nPersonal consultation'},{id:'celebration',kind:'service',title:'Life, celebrated',category:'Celebrations',description:'Birthdays, anniversaries, and all the moments you wish would last a little longer.',image:'/images/celebration.jpg',inclusions:'Birthday & family photography\nEvent highlights\nCustom coverage'},{id:'portrait',kind:'service',title:'Portraits with presence',category:'Portraits',description:'A little direction. Room to be yourself. Portraits and pre-wedding stories that feel like you.',image:'/images/portrait.jpg',inclusions:'Portrait & pre-wedding sessions\nLocation planning\nPersonal creative direction'}];
+
+export type Testimonial = {
+  id: string;
+  quote: string;
+  couple: string;
+  location: string;
+  eventType: string;
+  badgeImage: string;
+  year: string;
+  highlight: string;
+};
+
+export const testimonials: Testimonial[] = [
+  {
+    id: 't-1',
+    quote: "Watching our wedding film felt like reliving every unspoken emotion. Niraj and the Auré Studio team didn't just document the day — they captured the soul of our families laughing, crying, and dancing till dawn without ever feeling intrusive.",
+    couple: "Rhea & Rohan",
+    location: "Udaipur, Rajasthan",
+    eventType: "3-Day Royal Palace Celebration",
+    badgeImage: "/images/new-01.webp",
+    year: "2024",
+    highlight: "“A cinematic masterpiece our families will rewatch for generations.”"
+  },
+  {
+    id: 't-2',
+    quote: "We didn't want stiff posing or generic drone cuts. Auré Studio gave us the gentle space to just be ourselves by the sunset tide. When the teaser arrived, both of our mothers wept tears of joy. Truly pure, emotional cinema.",
+    couple: "Tanya & Kabir",
+    location: "South Goa",
+    eventType: "Coastal Sunset Wedding",
+    badgeImage: "/images/new-07.webp",
+    year: "2024",
+    highlight: "“Pure poetry on film. They made us feel so effortless and seen.”"
+  },
+  {
+    id: 't-3',
+    quote: "From our first consultation to the final 4K master delivery, the artistry and care were extraordinary. The audio recording of our personal vows layered over the evening lantern lighting was breathtaking beyond words.",
+    couple: "Meera & Siddharth",
+    location: "Alibaug, Maharashtra",
+    eventType: "Intimate Beachside Vows",
+    badgeImage: "/images/new-10.webp",
+    year: "2024",
+    highlight: "“The audio fidelity, color grading, and attention to detail are unmatched.”"
+  }
+];
+
+export type FAQ = {
+  question: string;
+  answer: string;
+  category: string;
+};
+
+export const faqs: FAQ[] = [
+  {
+    question: "Do you travel for destination weddings & elopements across India and abroad?",
+    answer: "Yes, destination celebrations are at the heart of our studio. We regularly travel across India (Udaipur, Goa, Jaipur, Mussoorie, Kerala, Alibaug) and internationally. Travel, logistics, and stay are billed transparently at actual cost or seamlessly bundled into an all-inclusive custom proposal.",
+    category: "Destination"
+  },
+  {
+    question: "How far in advance should we reserve our wedding dates?",
+    answer: "To ensure each couple receives our full creative focus and bespoke post-production, we commission a strictly limited number of weddings per season. Peak season dates (October through March) often reserve 6 to 12 months ahead. We recommend contacting us as soon as your venue or dates are shortlisted.",
+    category: "Booking"
+  },
+  {
+    question: "What is your turnaround timeline for photographs and cinematic films?",
+    answer: "We know the anticipation is high! We deliver a curated set of 25–40 color-graded preview photographs within 48 to 72 hours of your celebration for sharing with family and friends. Your complete curated high-resolution photography gallery is delivered within 4 to 6 weeks, and your cinematic 4K wedding film master with bespoke audio design within 8 to 10 weeks.",
+    category: "Deliverables"
+  },
+  {
+    question: "Do we receive raw footage and unedited photographs?",
+    answer: "Every photograph and film scene we deliver is individually color-graded and sound-engineered to our studio's signature standard. For couples who want to archive every archival camera angle and toast, we offer full unedited documentary reels and RAW archival footage hard drives as an optional add-on.",
+    category: "Deliverables"
+  },
+  {
+    question: "Can we customize our photography, film, and coverage package?",
+    answer: "Every love story is distinct. All our commissions are modular: you can seamlessly combine multi-day cinematic coverage, pre-wedding narrative portraits, aerial drone cinematography, same-day reception highlight edits, and Italian leather-bound fine-art heirloom albums.",
+    category: "Customization"
+  }
+];
+
+export const featuredStory = {
+  title: "Vows by the Tide: Tanya & Kabir's Sunset Celebration",
+  subtitle: "A 3-Day Coastal Saga in South Goa",
+  couple: "Tanya & Kabir",
+  location: "Cavelossim Beach, South Goa",
+  year: "2024",
+  palette: ["#f1eee5", "#cfb58a", "#617062", "#8c6b4f"],
+  quote: "“Under the amber Konkan sky, two soulmates promised each other a lifetime of laughter, stillness, and tides.”",
+  intro: "From golden morning haldi beneath swaying coconut fronds to heartfelt sunset vows as the tide rolled in, Tanya and Kabir’s Goa celebration was an ode to warmth, quiet tenderness, and spontaneous joy.",
+  chapters: [
+    {
+      num: "01",
+      title: "Morning Haldi & Yellow Marigolds",
+      time: "10:30 AM",
+      desc: "Sunlight filtering through palm canopies as turmeric, rose petals, and spontaneous laughter filled the heritage courtyard.",
+      image: "/images/new-08.webp"
+    },
+    {
+      num: "02",
+      title: "Sunset Vows Along the Shoreline",
+      time: "05:45 PM",
+      desc: "The gentle roar of the Arabian Sea as barefoot vows were exchanged under an open-air ivory canopy in golden hour light.",
+      image: "/images/hero-beach.webp"
+    },
+    {
+      num: "03",
+      title: "Dancing Under the Glowing Banyan",
+      time: "08:30 PM",
+      desc: "Warm incandescent fairy lights, acoustic guitar melodies, and an unscripted night of celebration with their closest circle.",
+      image: "/images/new-10.webp"
+    }
+  ]
+};
+

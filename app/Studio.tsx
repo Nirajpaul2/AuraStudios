@@ -1,7 +1,7 @@
 'use client';
 import { useEffect,useRef,useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowUpRight,ArrowRight,Play,Camera,Film,Sparkles,ShoppingBag,Menu,X,ChevronDown,ChevronLeft,ChevronRight,Check,Lock,Search,ArrowLeft,Plus,Upload,Settings,Inbox,Images,Users,RefreshCw,LoaderCircle } from 'lucide-react';
-import {defaults,type Item} from './lib/catalog';
+import { ArrowUpRight,ArrowRight,Play,Camera,Film,Sparkles,ShoppingBag,Menu,X,ChevronDown,ChevronLeft,ChevronRight,Check,Lock,Search,ArrowLeft,Plus,Upload,Settings,Inbox,Images,Users,RefreshCw,LoaderCircle,ArrowDown } from 'lucide-react';
+import {defaults,type Item,testimonials,faqs,featuredStory} from './lib/catalog';
 type Catalog={settings:typeof defaults;films:Item[];images:Item[];services:Item[];categories:Item[];sampleGallery:boolean};
 type User={userId:string;email:string;displayName:string}|null;
 const money=(n:number)=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n/100);
@@ -9,26 +9,30 @@ async function api(path:string,body?:unknown){const r=await fetch('/api/'+path,b
 function Button({children,href,onClick,outline=false,...props}:{children:ReactNode;href?:string;onClick?:()=>void;outline?:boolean;[k:string]:unknown}){const cls='button '+(outline?'outline':'gold');return href?<a className={cls} href={href}>{children}</a>:<button className={cls} onClick={onClick} {...props}>{children}</button>;}
 function Eyebrow({children}:{children:ReactNode}){return <div className="eyebrow"><span/>{children}</div>;}
 function Dialog({children,onClose,label}:{children:ReactNode;onClose:()=>void;label:string}){const ref=useRef<HTMLDialogElement>(null);useEffect(()=>{ref.current?.showModal();const close=()=>onClose();const d=ref.current;d?.addEventListener('close',close);document.body.style.overflow='hidden';return()=>{d?.removeEventListener('close',close);document.body.style.overflow='';};},[]);return <dialog ref={ref} aria-label={label} className="modal" onClick={e=>{if(e.target===e.currentTarget)onClose();}}><button className="close" onClick={onClose} aria-label="Close"><X size={22}/></button>{children}</dialog>;}
-export default function Studio({catalog,section='home',user,isAdmin=false,filmId}:{catalog:Catalog;section?:string;user:User;isAdmin?:boolean;filmId?:string}){const {settings:s,films,images,services}=catalog;const [menu,setMenu]=useState(false);const [lightbox,setLightbox]=useState<Item|null>(null);const [playing,setPlaying]=useState<Item|null>(null);const [filter,setFilter]=useState('All');const [search,setSearch]=useState('');const active=films.find(f=>f.id===filmId);const nav=[['Home','/','home'],['Photography','/photography','photography'],['Films','/films','films'],...(s.showAI?[['AI Cinematics','/ai','ai']]:[]),['Services','/services','services']];
+export default function Studio({catalog,section='home',user,isAdmin=false,filmId}:{catalog:Catalog;section?:string;user:User;isAdmin?:boolean;filmId?:string}){const {settings:s,films,images,services}=catalog;const [menu,setMenu]=useState(false);const [lightbox,setLightbox]=useState<Item|null>(null);const [playing,setPlaying]=useState<Item|null>(null);const [filter,setFilter]=useState('All');const [search,setSearch]=useState('');const {isPlaying:playingAudio,toggle:toggleAudio}=useAmbientAudio();const active=films.find(f=>f.id===filmId);const nav=[['Home','/','home'],['Photography','/photography','photography'],['Films','/films','films'],...(s.showAI?[['AI Cinematics','/ai','ai']]:[]),['Services','/services','services']];
  const lightboxIndex=lightbox?images.findIndex(im=>im.id===lightbox.id):-1;
  const prevLightbox=()=>{if(lightboxIndex>0)setLightbox(images[lightboxIndex-1]);else if(lightboxIndex===0)setLightbox(images[images.length-1]);};
  const nextLightbox=()=>{if(lightboxIndex>=0&&lightboxIndex<images.length-1)setLightbox(images[lightboxIndex+1]);else if(lightboxIndex===images.length-1)setLightbox(images[0]);};
  useEffect(()=>{if(!lightbox)return;const handleKey=(e:KeyboardEvent)=>{if(e.key==='ArrowLeft'){e.preventDefault();prevLightbox();}else if(e.key==='ArrowRight'){e.preventDefault();nextLightbox();}};window.addEventListener('keydown',handleKey);return()=>window.removeEventListener('keydown',handleKey);},[lightbox,lightboxIndex,images]);
  useEffect(()=>{if(!menu)return;const close=(event:KeyboardEvent)=>{if(event.key==='Escape')setMenu(false);};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close);},[menu]);
  const filtered=(items:Item[])=>items.filter(i=>(filter==='All'||i.category===filter)&&`${i.title} ${i.description} ${i.category}`.toLowerCase().includes(search.toLowerCase()));
- return <><a className="skip" href="#main">Skip to content</a>{menu&&<div className="nav-backdrop" onClick={()=>setMenu(false)} aria-hidden="true"/>}<header className="header"><a href="/" className="brand"><span className="brand-symbol">{s.logoUrl?<img className="brand-logo" src={s.logoUrl} alt=""/>:<>✧</>}</span><span>{s.name.replace(/ Studio$/i,'')}<small>STUDIO</small></span></a><nav id="main-navigation" aria-label="Main navigation" className={menu?'nav open':'nav'}>{nav.map(([name,url,id])=><a key={id} className={section===id?'active':''} href={url} onClick={()=>setMenu(false)}>{name}</a>)}{s.showStore&&<a className="mobile-nav-link" href="/store">Film store</a>}<a className="mobile-nav-link" href="/purchases">My Library</a></nav><div className="nav-actions"><a href="/purchases" className="library" aria-label="My Purchases"><ShoppingBag size={18}/><span>My Library</span></a><a className="nav-book" href="/booking">Let’s create <ArrowUpRight size={17}/></a><button type="button" className="menu-button" aria-controls="main-navigation" aria-expanded={menu} aria-label="Toggle navigation" onClick={()=>setMenu(open=>!open)}>{menu?<X/>:<Menu/>}</button></div></header>
+ return <><a className="skip" href="#main">Skip to content</a>{menu&&<div className="nav-backdrop" onClick={()=>setMenu(false)} aria-hidden="true"/>}<header className="header"><a href="/" className="brand"><span className="brand-symbol">{s.logoUrl?<img className="brand-logo" src={s.logoUrl} alt=""/>:<>✧</>}</span><span>{s.name.replace(/ Studio$/i,'')}<small>STUDIO</small></span></a><nav id="main-navigation" aria-label="Main navigation" className={menu?'nav open':'nav'}>{nav.map(([name,url,id])=><a key={id} className={section===id?'active':''} href={url} onClick={()=>setMenu(false)}>{name}</a>)}{s.showStore&&<a className="mobile-nav-link" href="/store">Film store</a>}<a className="mobile-nav-link" href="/purchases">My Library</a></nav><div className="nav-actions"><AmbientAudioToggle isPlaying={playingAudio} toggle={toggleAudio}/><a href="/purchases" className="library" aria-label="My Purchases"><ShoppingBag size={18}/><span>My Library</span></a><a className="nav-book" href="/booking">Let’s create <ArrowUpRight size={17}/></a><button type="button" className="menu-button" aria-controls="main-navigation" aria-expanded={menu} aria-label="Toggle navigation" onClick={()=>setMenu(open=>!open)}>{menu?<X/>:<Menu/>}</button></div></header>
  <main id="main">
  {section==='home'&&<><section className="hero"><img className="hero-image" src={s.heroImage} alt="Wedding couple in white embracing by the ocean shore at dusk" fetchPriority="high"/><div className="hero-shade"/><div className="hero-content"><Eyebrow>FOR THE MOMENTS THAT MATTER</Eyebrow><h1>Your moments.<br/>Our lens.<br/><em>Forever, felt.</em></h1><p>Honest photographs. Cinematic films.<br/>Extraordinary stories, beautifully told.</p><div className="hero-buttons"><Button href="/films">Explore our films <Play size={14} fill="currentColor"/></Button><Button href="/booking" outline>Book a session <ArrowUpRight size={17}/></Button></div></div><div className="hero-bottom"><span>PHOTOGRAPHY &nbsp; / &nbsp; FILM &nbsp; / &nbsp; AI CINEMATICS</span><a href="#selected">SCROLL TO EXPLORE <span>↓</span></a><span className="hero-counter">AURÉ <span>/ EDITION 01</span></span></div><div className="hero-side">EVERY FRAME, A FEELING.</div></section>
  <div className="discipline"><span>Weddings & love stories</span><i>✦</i><span>Life’s little celebrations</span><i>✦</i><span>Portraits with soul</span><i>✦</i><span>A new cinematic perspective</span></div>
  <section id="selected" className="section"><div className="section-head"><div><Eyebrow>THE MOTION COLLECTION</Eyebrow><h2>Some stories deserve<br/>to be <em>felt again.</em></h2></div><div className="section-aside"><p>Love, atmosphere, and the art of storytelling.<br/>A collection to get lost in.</p><a className="text-link" href="/films">Explore the film collection <ArrowUpRight size={16}/></a></div></div><div className="film-grid">{films.slice(0,6).map((f,i)=><FilmCard key={f.id} film={f} index={i} onPlay={()=>setPlaying(f)}/>)}</div>{films.some(f=>f.reference)&&<p className="caption">Creative references by Heartwave · Official YouTube embeds · Not studio client work</p>}</section>
+ <FeaturedStorySection/>
  <section className="section gallery-section"><div className="section-head"><div><Eyebrow>STILL FRAMES. ENDLESS FEELING.</Eyebrow><h2>Life, in its <em>beautiful detail.</em></h2></div><a className="text-link" href="/photography">View photography <ArrowUpRight size={17}/></a></div><div className="editorial-gallery">{images.slice(0,4).map((im,i)=><button className={'gallery-tile tile-'+i} key={im.id} onClick={()=>setLightbox(im)}><img src={im.image} alt={im.title} loading="lazy"/><div><span>{im.category}</span><ArrowUpRight size={22}/></div></button>)}</div>{images.length>4&&<div className="collection-strip">{images.slice(4,12).map(im=><button key={im.id} onClick={()=>setLightbox(im)} aria-label={"View "+im.title}><img src={im.image} alt={im.title} loading="lazy" decoding="async"/><span>{im.category}</span></button>)}</div>}<a className="text-link collection-more" href="/photography">Explore all {images.length} photographs <ArrowUpRight size={17}/></a>{catalog.sampleGallery&&<p className="caption">Featuring authentic client stories alongside curated creative references by Auré Studio.</p>}</section>
  {s.showAI&&<section className="ai-feature"><div className="ai-photo"><img src="/images/landscape.jpg" loading="lazy" alt="Mountain lake in cinematic evening light"/><span><Sparkles size={14}/> A NEW CREATIVE PERSPECTIVE</span></div><div className="ai-copy"><Eyebrow>HUMAN VISION. NEW POSSIBILITIES.</Eyebrow><h2>Beyond the ordinary.<br/><em>Into the cinematic.</em></h2><p>Have a film that could become something more? Explore a creative conversation around restoration, cinematic color, and AI-assisted storytelling.</p><div className="ai-tags"><span>Color & atmosphere</span><span>Restoration</span><span>Creative effects</span></div><a className="text-link" href="/ai">Discover AI cinematics <ArrowUpRight size={18}/></a></div></section>}
- <section className="section"><div className="section-head"><div><Eyebrow>MADE AROUND YOU</Eyebrow><h2>Your story. <em>Our craft.</em></h2></div><a href="/services" className="text-link">Explore our services <ArrowUpRight size={17}/></a></div><div className="service-grid">{services.slice(0,3).map((sv,i)=><a key={sv.id} href={'/booking?service='+encodeURIComponent(sv.title)} className="service-card"><span className="service-number">0{i+1}</span>{i===0?<Camera/>:i===1?<Film/>:<Sparkles/>}<h3>{sv.title}</h3><p>{sv.description}</p><span className="service-bottom">Let’s talk about your vision <ArrowUpRight size={18}/></span></a>)}</div></section><BookingBanner/></>}
+ <section className="section"><div className="section-head"><div><Eyebrow>MADE AROUND YOU</Eyebrow><h2>Your story. <em>Our craft.</em></h2></div><a href="/services" className="text-link">Explore our services <ArrowUpRight size={17}/></a></div><div className="service-grid">{services.slice(0,3).map((sv,i)=><a key={sv.id} href={'/booking?service='+encodeURIComponent(sv.title)} className="service-card"><span className="service-number">0{i+1}</span>{i===0?<Camera/>:i===1?<Film/>:<Sparkles/>}<h3>{sv.title}</h3><p>{sv.description}</p><span className="service-bottom">Let’s talk about your vision <ArrowUpRight size={18}/></span></a>)}</div></section>
+ <TestimonialsSection/>
+ <FaqSection title="Frequently Asked Questions" subtitle="Transparent details on destination travel, dates, turnaround timelines, and our bespoke craft."/>
+ <BookingBanner/></>}
  {section==='photography'&&<section className="section inner-page"><Eyebrow>THE PHOTOGRAPHY COLLECTION</Eyebrow><h1>A fraction of a second.<br/><em>A lifetime of feeling.</em></h1><p className="intro">The glances, the joy, the unscripted moments in between.</p><p className="collection-count">{images.length} photographs · Select a category or open a frame to explore.</p><Filters items={images} filter={filter} setFilter={setFilter}/><div className="photo-grid">{filtered(images).map(im=><button className="photo-card" key={im.id} onClick={()=>setLightbox(im)}><img src={im.image} alt={im.title} loading="lazy"/><div><h3>{im.title}</h3><span>{im.category} <ArrowUpRight size={16}/></span></div></button>)}</div>{!filtered(images).length&&<Empty title="A new collection is on its way." text="Explore another category in the meantime."/>}{catalog.sampleGallery&&<p className="caption">Featuring authentic photography by Auré Studio alongside curated creative references. <a href="/credits">View photographers & credits</a>.</p>}</section>}
  {section==='films'&&!filmId&&<section className="section inner-page"><Eyebrow>THE FILM COLLECTION</Eyebrow><h1>More than moving pictures.<br/><em>Moving stories.</em></h1><div className="collection-toolbar"><p className="intro">Discover films, creative references, and premium releases.</p><label className="search"><Search size={18}/><input aria-label="Search films" placeholder="Find a film…" value={search} onChange={e=>setSearch(e.target.value)}/></label></div><Filters items={films} filter={filter} setFilter={setFilter}/><div className="film-grid">{filtered(films).map((f,i)=><FilmCard film={f} index={i} key={f.id} onPlay={()=>setPlaying(f)}/>)}</div>{!filtered(films).length&&<Empty title="No films match this search." text="Try another title or category."/>}<p className="caption">Reference films are credited to their original creator and are never offered for purchase.</p>{s.showStore&&<div className="store-callout"><Lock size={25}/><div><h3>A collection worth keeping.</h3><p>Explore premium releases and revisit your purchased films in your personal library.</p></div><Button href="/store" outline>Visit the film store <ArrowUpRight size={17}/></Button></div>}</section>}
  {filmId&&(active?<FilmDetail film={active} user={user} onPlay={()=>setPlaying(active)}/>:<section className="section inner-page"><Empty title="This film is not available." text="It may be private, unpublished, or no longer in the collection."/><Button href="/films">Back to films</Button></section>)}
  {section==='ai'&&<><section className="section inner-page ai-page"><Eyebrow>THE NEXT FRAME</Eyebrow><h1>Your imagination.<br/><em>A new dimension.</em></h1><p className="intro">Give existing footage a fresh perspective, or explore a cinematic idea from the beginning.</p><div className="ai-wide"><img src="/images/landscape.jpg" alt="Cinematic mountain landscape"/><span><Sparkles size={17}/> THE POSSIBILITIES START WITH YOUR IDEA</span></div><div className="section-head"><h2>Let’s explore what<br/>your film <em>could become.</em></h2><div className="section-aside"><p>Every project starts with a review of your footage, creative goals, and what is technically possible. Availability and scope are confirmed in your quote.</p><Button href="/booking?service=AI%20video%20editing">Request AI video editing <ArrowUpRight size={17}/></Button></div></div><div className="cinematic-moodboard">{images.filter(im=>im.category==='Cinematic landscapes').map(im=><button key={im.id} onClick={()=>setLightbox(im)} aria-label={"View "+im.title}><img src={im.image} alt={im.title} loading="lazy" decoding="async"/><span>{im.title}</span></button>)}</div><div className="service-grid">{[['01','Color & atmosphere','Explore cinematic grading, a consistent visual style, and a mood that brings your story together.'],['02','Restoration & clarity','Discuss sharpening, noise reduction, and restoration options for footage that deserves another look.'],['03','A different kind of story','Consider AI-assisted effects, transitions, generated scenes, and thoughtfully edited highlights.']].map(([n,t,d])=><article className="service-card" key={n}><span className="service-number">{n}</span><Sparkles/><h3>{t}</h3><p>{d}</p></article>)}</div></section><BookingBanner/></>}
- {section==='services'&&<section className="section inner-page"><Eyebrow>CRAFTED FOR YOUR OCCASION</Eyebrow><h1>Good stories begin<br/>with <em>a conversation.</em></h1><p className="intro">Thoughtful photography and films, with a scope shaped around you.</p><div className="services-list">{services.map((sv,i)=><article key={sv.id}><img src={sv.image} alt={sv.title}/><div><span className="eyebrow">0{i+1} / {sv.category}</span><h2>{sv.title}</h2><p>{sv.description}</p><ul>{sv.inclusions?.split('\n').filter(Boolean).map(x=><li key={x}><Check size={15}/>{x}</li>)}</ul><div className="service-price"><span>{sv.price?`From ${money(sv.price)}`:'A personal quote, made for you'}</span><Button href={'/booking?service='+encodeURIComponent(sv.title)} outline>Request a quote <ArrowUpRight size={17}/></Button></div></div></article>)}</div></section>}
+ {section==='services'&&<><section className="section inner-page"><Eyebrow>CRAFTED FOR YOUR OCCASION</Eyebrow><h1>Good stories begin<br/>with <em>a conversation.</em></h1><p className="intro">Thoughtful photography and films, with a scope shaped around you.</p><div className="services-list">{services.map((sv,i)=><article key={sv.id}><img src={sv.image} alt={sv.title}/><div><span className="eyebrow">0{i+1} / {sv.category}</span><h2>{sv.title}</h2><p>{sv.description}</p><ul>{sv.inclusions?.split('\n').filter(Boolean).map(x=><li key={x}><Check size={15}/>{x}</li>)}</ul><div className="service-price"><span>{sv.price?`From ${money(sv.price)}`:'A personal quote, made for you'}</span><Button href={'/booking?service='+encodeURIComponent(sv.title)} outline>Request a quote <ArrowUpRight size={17}/></Button></div></div></article>)}</div></section><FaqSection title="Package & Booking Inquiries" subtitle="Everything you need to know about destination travel, turnaround times, and booking your celebration."/><BookingBanner/></>}
  {section==='booking'&&<Booking user={user} services={services} settings={s} />}
  {section==='store'&&<section className="section inner-page"><Eyebrow>THE PRIVATE COLLECTION</Eyebrow><h1>A story to return to.<br/><em>Whenever you like.</em></h1><p className="intro">Watch a preview, find a film you love, and make it part of your library.</p><div className="film-grid">{films.filter(f=>f.access==='premium').map((f,i)=><FilmCard key={f.id} film={f} index={i} onPlay={()=>setPlaying(f)}/>)}</div>{!films.some(f=>f.access==='premium')&&<div className="premium-empty"><img src="/images/landscape.jpg" alt="Cinematic landscape"/><div><Lock/><Eyebrow>A LITTLE ANTICIPATION</Eyebrow><h2>Something special<br/>is <em>in the making.</em></h2><p>Premium films will appear here when the studio releases its first collection. Until then, explore the inspiration behind the work.</p><Button href="/films">Explore free films <ArrowRight size={17}/></Button></div></div>}</section>}
  {section==='purchases'&&<Account user={user} />}
@@ -52,8 +56,524 @@ function Player({film}:{film:Item}){const [error,setError]=useState(false);retur
 function FilmDetail({film:f,user,onPlay}:{film:Item;user:User;onPlay:()=>void}){const [status,setStatus]=useState('');const [busy,setBusy]=useState(false);const [url,setUrl]=useState('');async function playOwned(){setBusy(true);try{const d=await api('playback',{videoId:f.id});setUrl(d.url);setStatus('');}catch(e){setStatus((e as Error).message);}finally{setBusy(false);}}
  async function buy(){setBusy(true);setStatus('');try{const order=await api('payments/order',{videoId:f.id});if(!(window as any).Razorpay)await new Promise<void>((resolve,reject)=>{const script=document.createElement('script');script.src='https://checkout.razorpay.com/v1/checkout.js';script.onload=()=>resolve();script.onerror=()=>reject(new Error('Could not load secure checkout'));document.head.appendChild(script);});const checkout=new (window as any).Razorpay({key:order.key,order_id:order.orderId,amount:order.amount,currency:order.currency,name:'Film purchase',description:(order.test?'TEST PAYMENT · ':'')+f.title,handler:async(response:unknown)=>{try{setStatus('Verifying your payment…');const d=await api('payments/verify',response);setStatus(d.paid?'Payment verified. Your film is in My Library.':'This payment was refunded.');}catch(e){setStatus((e as Error).message+' If you were charged, the studio can reconcile your payment.');}},modal:{ondismiss:()=>setStatus('Checkout closed. Access is granted only after verified payment.')}});checkout.on('payment.failed',()=>setStatus('Payment failed. Please try again or choose another payment method.'));checkout.open();}catch(e){setStatus((e as Error).message);}finally{setBusy(false);}}
  return <section className="section inner-page"><a className="back-link" href="/films"><ArrowLeft size={16}/> The film collection</a><div className="detail-layout"><div>{url?<video controls autoPlay className="video-player" src={url} onError={()=>setStatus('Your playback link may have expired. Select Watch full film to renew it.')}/>:<button className="film-image detail-poster" onClick={onPlay}><img src={f.image} alt={f.title}/><span className="play-circle"><Play fill="currentColor"/></span><span className="duration">{f.reference?'Watch reference':'Watch preview'}</span></button>}</div><div><Eyebrow>{f.reference?'CREATIVE REFERENCE':f.access==='premium'?'PREMIUM COLLECTION':f.category}</Eyebrow><h1>{f.title}</h1><p>{f.description}</p>{f.reference?<p className="notice">Created by Heartwave. This reference is shared through its official YouTube embed and is not sold by the studio.</p>:<><h3>{f.price?money(f.price):'Studio collection'}</h3>{f.access==='public'?<Button onClick={onPlay}>Watch film <Play size={15}/></Button>:!user?<a className="button gold" target="_top" href={'/signin-with-chatgpt?return_to='+encodeURIComponent('/films/'+f.id)}>Sign in to continue <ArrowUpRight size={17}/></a>:<><Button onClick={playOwned} disabled={busy}>Watch full film <Play size={15}/></Button>{f.access==='premium'&&<Button onClick={buy} disabled={busy} outline>Purchase access <ShoppingBag size={15}/></Button>}</>}<p className="caption">Full-quality playback in your personal library. Preview quality may differ from the finished film.</p></>}{status&&<p role="status" className="notice">{status}</p>}</div></div></section>;}
-function Booking({user,services,settings}:{user:User;services:Item[];settings:typeof defaults}){const [selected,setSelected]=useState<string[]>([]);const [status,setStatus]=useState('');const [busy,setBusy]=useState(false);const [receipt,setReceipt]=useState('');const [lastInquiry,setLastInquiry]=useState<any>(null);useEffect(()=>{const s=new URLSearchParams(location.search).get('service');if(s)setSelected([s]);else if(services.length)setSelected([services[0].title]);},[services]);async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();const data=new FormData(e.currentTarget);const payload={name:String(data.get('name')||''),contact:String(data.get('contact')||''),eventType:String(data.get('eventType')||''),date:String(data.get('date')||''),location:String(data.get('location')||''),services:selected,budget:String(data.get('budget')||''),message:String(data.get('message')||''),reference:String(data.get('reference')||''),consent:data.get('consent')==='on'};setBusy(true);setStatus('');try{const d=await api('bookings',payload);setReceipt(d.id);setLastInquiry(payload);}catch(e){setStatus((e as Error).message);}finally{setBusy(false);}}
-  return <section className="section inner-page booking-page"><div><Eyebrow>LET’S CREATE SOMETHING MEANINGFUL</Eyebrow><h1>Every great story<br/>starts with <em>hello.</em></h1><p className="intro">Tell us a little about your occasion or creative idea. We’ll work out the possibilities together.</p><ContactLinks settings={settings}/><img className="booking-photo" src="/images/wedding-1.jpg" alt="Details from a wedding celebration"/><p className="caption">Your inquiry starts a conversation. Dates and pricing are confirmed personally.</p></div><div>{receipt?<div className="success"><div className="success-icon"><Check size={32}/></div><h2>Your story<br/>starts <em>here.</em></h2><p>Your inquiry has been saved for the studio and forwarded to nirajpaul1991@gmail.com.</p><div className="receipt-badge"><span>Reference code</span><code>{receipt.slice(0,8).toUpperCase()}</code></div><div className="receipt-actions">{user&&<Button href="/purchases">View your library <ArrowRight size={16}/></Button>}{settings.phone&&<a className="button outline" href={`https://wa.me/${settings.phone.replace(/\D/g,'')}?text=${encodeURIComponent('Hello Auré Studio, I just submitted booking inquiry #'+receipt.slice(0,8).toUpperCase())}`} target="_blank" rel="noopener noreferrer">Message on WhatsApp <ArrowUpRight size={16}/></a>}<a className="button outline" href={`mailto:${settings.email||'nirajpaul1991@gmail.com'}?subject=${encodeURIComponent('New Booking Inquiry #'+receipt.slice(0,8).toUpperCase()+' - '+(lastInquiry?.name||'Client'))}&body=${encodeURIComponent('Hello Auré Studio,\n\nI have submitted a new booking inquiry.\n\nReference: #'+receipt.slice(0,8).toUpperCase()+'\nClient Name: '+(lastInquiry?.name||'')+'\nContact: '+(lastInquiry?.contact||'')+'\nOccasion: '+(lastInquiry?.eventType||'')+'\nTarget Date: '+(lastInquiry?.date||'')+'\nLocation: '+(lastInquiry?.location||'')+'\nServices: '+((lastInquiry?.services||[]).join(', '))+'\nBudget: '+(lastInquiry?.budget||'Not specified')+'\n\nClient Vision / Message:\n'+(lastInquiry?.message||'None')+'\n\nThank you!')}`} target="_blank" rel="noopener noreferrer">Email nirajpaul1991@gmail.com <ArrowUpRight size={16}/></a></div></div>:<form className="booking-form" onSubmit={submit}><h3>A little about your vision</h3><div className="form-row"><label>Your name<input name="name" placeholder="How should we call you?" minLength={2} maxLength={100} required defaultValue={user?.displayName.includes('@')?'':user?.displayName||''}/></label><label>Email or phone<input name="contact" placeholder="So we can reach you" required maxLength={200} defaultValue={user?.email||''}/></label></div><div className="form-row"><label>The occasion<select name="eventType" required defaultValue=""><option value="" disabled>Select your occasion</option>{['Wedding','Pre-wedding','Engagement','Birthday','Family event','Portrait session','AI editing project','Other'].map(t=><option key={t}>{t}</option>)}</select></label><label>Event date / target date<input type="date" name="date" required min={new Date().toISOString().slice(0,10)}/></label></div><label>Location<input name="location" placeholder="City, venue, or remote project" required minLength={2} maxLength={200}/></label><fieldset><legend>What can we create together?</legend><div className="service-options">{[...new Set([...services.map(s=>s.title),'AI video editing',...selected])].map(s=><label key={s}><input type="checkbox" checked={selected.includes(s)} onChange={e=>setSelected(e.target.checked?[...selected,s]:selected.filter(x=>x!==s))}/><span>{s}</span></label>)}</div></fieldset><label>Budget <span className="optional">optional</span><input name="budget" placeholder="Your approximate budget in INR" maxLength={80}/></label><label>Tell us your story<textarea name="message" placeholder="The mood, the moments, the idea you have in mind…" rows={4} maxLength={4000}/></label><label>Reference link <span className="optional">optional</span><input name="reference" type="url" placeholder="https://" maxLength={2000}/></label><label className="consent"><input type="checkbox" name="consent" required/><span>I agree to share these details with the studio for this inquiry. <a href="/privacy">Privacy notice</a></span></label>{status&&<p className="notice" role="alert">{status}</p>}<button className="button gold wide" disabled={busy||!selected.length}>{busy?<LoaderCircle className="spin" size={17}/>:<>Send your inquiry <ArrowUpRight size={18}/></>}</button>{user?<p className="caption">Signed in as {user.displayName}. Your inquiry will sync with your library.</p>:<p className="caption">No sign-in required. Have an account? <a href="/signin-with-chatgpt?return_to=/booking">Sign in to sync with your library</a>.</p>}</form>}</div></section>;}
+
+function useAmbientAudio(){
+  const [isPlaying,setIsPlaying]=useState(false);
+  const audioContextRef=useRef<AudioContext|null>(null);
+  const masterGainRef=useRef<GainNode|null>(null);
+  const activeNodesRef=useRef<any[]>([]);
+
+  const toggle=()=>{
+    if(isPlaying){
+      if(masterGainRef.current&&audioContextRef.current){
+        const ctx=audioContextRef.current;
+        const now=ctx.currentTime;
+        masterGainRef.current.gain.setValueAtTime(masterGainRef.current.gain.value,now);
+        masterGainRef.current.gain.linearRampToValueAtTime(0.0001,now+0.5);
+        setTimeout(()=>{
+          activeNodesRef.current.forEach(n=>{
+            try{if(n.stop)n.stop();n.disconnect();}catch(_){}
+          });
+          activeNodesRef.current=[];
+          setIsPlaying(false);
+        },550);
+      }else{
+        setIsPlaying(false);
+      }
+    }else{
+      try{
+        const AudioCtx=window.AudioContext||(window as any).webkitAudioContext;
+        if(!AudioCtx)return;
+        const ctx=audioContextRef.current||new AudioCtx();
+        audioContextRef.current=ctx;
+        if(ctx.state==='suspended')ctx.resume();
+
+        const now=ctx.currentTime;
+        const master=ctx.createGain();
+        master.gain.setValueAtTime(0.0001,now);
+        master.gain.exponentialRampToValueAtTime(0.065,now+1.6);
+        master.connect(ctx.destination);
+        masterGainRef.current=master;
+
+        const filter=ctx.createBiquadFilter();
+        filter.type='lowpass';
+        filter.frequency.setValueAtTime(420,now);
+        filter.Q.setValueAtTime(1.4,now);
+        filter.connect(master);
+
+        const freqs=[92.5,138.59,174.61,207.65,233.08,277.18];
+        const nodes:any[]=[filter,master];
+
+        freqs.forEach((freq,i)=>{
+          const osc=ctx.createOscillator();
+          const oscGain=ctx.createGain();
+          osc.type=i%2===0?'sine':'triangle';
+          osc.frequency.setValueAtTime(freq,now);
+          osc.detune.setValueAtTime((i-2.5)*3.5,now);
+
+          const lfo=ctx.createOscillator();
+          const lfoGain=ctx.createGain();
+          lfo.frequency.setValueAtTime(0.12+(i*0.03),now);
+          lfoGain.gain.setValueAtTime(freq*0.008,now);
+          lfo.connect(lfoGain);
+          lfoGain.connect(osc.frequency);
+          lfo.start(now);
+
+          oscGain.gain.setValueAtTime(0.07/(i+1),now);
+          osc.connect(oscGain);
+          oscGain.connect(filter);
+          osc.start(now);
+
+          nodes.push(osc,oscGain,lfo,lfoGain);
+        });
+
+        activeNodesRef.current=nodes;
+        setIsPlaying(true);
+      }catch(err){
+        console.error('Ambient audio error:',err);
+      }
+    }
+  };
+
+  useEffect(()=>{
+    return ()=>{
+      try{
+        activeNodesRef.current.forEach(n=>{
+          try{if(n.stop)n.stop();n.disconnect();}catch(_){}
+        });
+        if(audioContextRef.current&&audioContextRef.current.state!=='closed'){
+          audioContextRef.current.close();
+        }
+      }catch(_){}
+    };
+  },[]);
+
+  return {isPlaying,toggle};
+}
+
+function AmbientAudioToggle({isPlaying,toggle}:{isPlaying:boolean;toggle:()=>void}){
+  return (
+    <button
+      type="button"
+      className={`audio-toggle ${isPlaying?'playing':''}`}
+      onClick={toggle}
+      aria-label={isPlaying?'Mute film score':'Play cinematic ambient film score'}
+      title={isPlaying?'Mute ambient film score':'Experience site with ambient film score'}
+    >
+      <span className="audio-wave" aria-hidden="true">
+        <span className="wave-bar bar-1"/>
+        <span className="wave-bar bar-2"/>
+        <span className="wave-bar bar-3"/>
+        <span className="wave-bar bar-4"/>
+      </span>
+      <span className="audio-label">{isPlaying?'Score playing':'Ambient score'}</span>
+    </button>
+  );
+}
+
+function FeaturedStorySection(){
+  const story=featuredStory;
+  return (
+    <section className="section featured-story-section">
+      <div className="section-head">
+        <div>
+          <Eyebrow>FEATURED LOVE STORY · CASE STUDY</Eyebrow>
+          <h2>{story.title.split(':')[0]}:<br/><em>{story.title.split(':')[1]||story.subtitle}</em></h2>
+        </div>
+        <div className="section-aside">
+          <p>{story.subtitle} · {story.location}</p>
+          <a className="text-link" href="/booking?service=Wedding%20stories">Inquire for your celebration <ArrowUpRight size={16}/></a>
+        </div>
+      </div>
+
+      <div className="story-layout">
+        <div className="story-hero-media">
+          <img src="/images/hero-beach.webp" alt={story.title} loading="lazy"/>
+          <div className="story-hero-overlay">
+            <span className="story-pill">{story.location} · {story.year}</span>
+            <p className="story-pull-quote">{story.quote}</p>
+          </div>
+        </div>
+
+        <div className="story-sidebar">
+          <div className="story-intro-block">
+            <span className="overline">EDITORIAL CASE STUDY</span>
+            <p>{story.intro}</p>
+            <div className="story-palette">
+              <span>Color Science & Grade:</span>
+              <div className="swatches">
+                {story.palette.map((c,idx)=><span key={idx} className="swatch" style={{backgroundColor:c}} title={c}/>)}
+              </div>
+            </div>
+          </div>
+
+          <div className="story-chapters-list">
+            {story.chapters.map(chap=>(
+              <article key={chap.num} className="chapter-item">
+                <div className="chapter-thumb">
+                  <img src={chap.image} alt={chap.title} loading="lazy"/>
+                  <span className="chapter-time">{chap.time}</span>
+                </div>
+                <div className="chapter-info">
+                  <span className="chapter-number">Chapter {chap.num}</span>
+                  <h4>{chap.title}</h4>
+                  <p>{chap.desc}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TestimonialsSection(){
+  const [active,setActive]=useState(0);
+  const t=testimonials[active];
+
+  return (
+    <section className="section testimonials-section">
+      <div className="section-head">
+        <div>
+          <Eyebrow>WORDS FROM OUR COUPLES</Eyebrow>
+          <h2>Love, remembered<br/><em>in their own words.</em></h2>
+        </div>
+        <div className="section-aside">
+          <p>Unfiltered reflections from couples who trusted us with the defining days of their lives.</p>
+          <div className="testimonial-controls">
+            <button
+              type="button"
+              className="round-link"
+              onClick={()=>setActive((active-1+testimonials.length)%testimonials.length)}
+              aria-label="Previous testimonial"
+            >
+              <ChevronLeft size={18}/>
+            </button>
+            <span className="testimonial-counter">0{active+1} <i>/</i> 0{testimonials.length}</span>
+            <button
+              type="button"
+              className="round-link"
+              onClick={()=>setActive((active+1)%testimonials.length)}
+              aria-label="Next testimonial"
+            >
+              <ChevronRight size={18}/>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="testimonial-card">
+        <div className="testimonial-stars" aria-hidden="true">★★★★★</div>
+        <blockquote className="testimonial-quote">{t.quote}</blockquote>
+        <p className="testimonial-highlight">{t.highlight}</p>
+        <div className="testimonial-meta">
+          <img src={t.badgeImage} alt={t.couple} className="couple-avatar" loading="lazy"/>
+          <div>
+            <h3>{t.couple}</h3>
+            <span>{t.location} · {t.eventType}</span>
+          </div>
+          <span className="couple-year">{t.year}</span>
+        </div>
+      </div>
+
+      <div className="testimonial-thumbs">
+        {testimonials.map((item,i)=>(
+          <button
+            key={item.id}
+            type="button"
+            className={`testimonial-thumb ${i===active?'active':''}`}
+            onClick={()=>setActive(i)}
+          >
+            <img src={item.badgeImage} alt="" loading="lazy"/>
+            <div>
+              <strong>{item.couple}</strong>
+              <small>{item.location.split(',')[0]}</small>
+            </div>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FaqSection({title="Frequently Asked Questions",subtitle="Everything you need to know about destination travel, booking timelines, turnaround times, and packages."}:{title?:string;subtitle?:string}){
+  const [openIdx,setOpenIdx]=useState<number|null>(0);
+
+  return (
+    <section className="section faq-section">
+      <div className="section-head">
+        <div>
+          <Eyebrow>CLARITY & DETAILS</Eyebrow>
+          <h2>{title}</h2>
+        </div>
+        <div className="section-aside">
+          <p>{subtitle}</p>
+          <a className="text-link" href="/booking">Have a unique question? Ask us <ArrowUpRight size={16}/></a>
+        </div>
+      </div>
+
+      <div className="faq-accordion">
+        {faqs.map((faq,i)=>{
+          const isOpen=openIdx===i;
+          return (
+            <div key={i} className={`faq-row ${isOpen?'open':''}`}>
+              <button
+                type="button"
+                className="faq-trigger"
+                onClick={()=>setOpenIdx(isOpen?null:i)}
+                aria-expanded={isOpen}
+              >
+                <span className="faq-tag">{faq.category}</span>
+                <span className="faq-query">{faq.question}</span>
+                <span className="faq-icon" aria-hidden="true">{isOpen?'−':'+'}</span>
+              </button>
+              {isOpen&&(
+                <div className="faq-body">
+                  <p>{faq.answer}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function PackageEstimator({onApply}:{onApply:(plan:{services:string[];budget:string;note:string})=>void}){
+  const [days,setDays]=useState<'1'|'2'|'3'>('2');
+  const [coverage,setCoverage]=useState<'both'|'film'|'photo'>('both');
+  const [addons,setAddons]=useState<string[]>(['Aerial Drone Cinematography']);
+
+  const toggleAddon=(id:string)=>{
+    setAddons(prev=>prev.includes(id)?prev.filter(x=>x!==id):[...prev,id]);
+  };
+
+  let minK=days==='1'?85:days==='2'?145:215;
+  let maxK=days==='1'?120:days==='2'?195:285;
+
+  if(coverage==='film'){
+    minK=Math.round(minK*0.7);
+    maxK=Math.round(maxK*0.7);
+  }else if(coverage==='photo'){
+    minK=Math.round(minK*0.6);
+    maxK=Math.round(maxK*0.6);
+  }
+
+  let addK=0;
+  if(addons.includes('Aerial Drone Cinematography'))addK+=15;
+  if(addons.includes('Pre-wedding Sunset Session'))addK+=25;
+  if(addons.includes('Same-day Teaser Highlight'))addK+=18;
+  if(addons.includes('Fine-Art Italian Leather Album'))addK+=22;
+
+  const totalMin=(minK+addK)*1000;
+  const totalMax=(maxK+addK)*1000;
+
+  const fmt=(n:number)=>'₹'+new Intl.NumberFormat('en-IN').format(n);
+  const estRange=`${fmt(totalMin)} – ${fmt(totalMax)}`;
+
+  const daysLabel=days==='1'?'1 Day Celebration':days==='2'?'2 Days (Pre-wedding + Wedding)':'3+ Days Grand Destination';
+  const coverageLabel=coverage==='both'?'Photo & Film Duo':coverage==='film'?'Cinematic Film Only':'Fine-Art Photography Only';
+
+  const apply=()=>{
+    const s:string[]=[];
+    if(coverage==='both'||coverage==='photo')s.push('Wedding stories');
+    if(coverage==='both'||coverage==='film')s.push('Life, celebrated');
+    if(addons.includes('Pre-wedding Sunset Session'))s.push('Portraits with presence');
+    if(!s.length)s.push('Wedding stories');
+
+    const note=`Custom Package Scope:\n• Duration: ${daysLabel}\n• Creative Team: ${coverageLabel}\n• Add-ons: ${addons.length?addons.join(', '):'None'}\n• Estimated Investment Range: ${estRange}`;
+
+    onApply({
+      services:s,
+      budget:estRange,
+      note
+    });
+  };
+
+  return (
+    <div className="package-estimator">
+      <div className="estimator-head">
+        <div>
+          <span className="estimator-eyebrow">✦ INTERACTIVE PACKAGE ESTIMATOR</span>
+          <h3>Design your celebration <em>scope</em></h3>
+        </div>
+        <div className="estimator-price-tag">
+          <small>Estimated investment</small>
+          <strong>{estRange}</strong>
+        </div>
+      </div>
+
+      <div className="estimator-step">
+        <label className="estimator-label">1. Select celebration duration</label>
+        <div className="estimator-options">
+          <button type="button" className={`est-opt ${days==='1'?'selected':''}`} onClick={()=>setDays('1')}>
+            <strong>1 Day</strong>
+            <small>Single-day ceremony</small>
+          </button>
+          <button type="button" className={`est-opt ${days==='2'?'selected':''}`} onClick={()=>setDays('2')}>
+            <strong>2 Days</strong>
+            <small>Weekend / Sangeet + Vows</small>
+          </button>
+          <button type="button" className={`est-opt ${days==='3'?'selected':''}`} onClick={()=>setDays('3')}>
+            <strong>3+ Days</strong>
+            <small>Grand destination</small>
+          </button>
+        </div>
+      </div>
+
+      <div className="estimator-step">
+        <label className="estimator-label">2. Select creative coverage</label>
+        <div className="estimator-options">
+          <button type="button" className={`est-opt ${coverage==='both'?'selected':''}`} onClick={()=>setCoverage('both')}>
+            <strong>Photo & Film Duo</strong>
+            <small>Lead camera & film crew</small>
+          </button>
+          <button type="button" className={`est-opt ${coverage==='film'?'selected':''}`} onClick={()=>setCoverage('film')}>
+            <strong>Cinematic Film Master</strong>
+            <small>4K films & sound design</small>
+          </button>
+          <button type="button" className={`est-opt ${coverage==='photo'?'selected':''}`} onClick={()=>setCoverage('photo')}>
+            <strong>Editorial Photography</strong>
+            <small>Stills, portraits & details</small>
+          </button>
+        </div>
+      </div>
+
+      <div className="estimator-step">
+        <label className="estimator-label">3. Signature bespoke add-ons</label>
+        <div className="estimator-addons">
+          {[
+            {id:'Aerial Drone Cinematography',label:'Aerial Drone Cinematography',price:'+₹15,000'},
+            {id:'Pre-wedding Sunset Session',label:'Pre-wedding Sunset Session',price:'+₹25,000'},
+            {id:'Same-day Teaser Highlight',label:'Same-day Teaser Highlight',price:'+₹18,000'},
+            {id:'Fine-Art Italian Leather Album',label:'Fine-Art Italian Leather Album',price:'+₹22,000'}
+          ].map(item=>(
+            <button
+              type="button"
+              key={item.id}
+              className={`addon-btn ${addons.includes(item.id)?'selected':''}`}
+              onClick={()=>toggleAddon(item.id)}
+            >
+              <span className="addon-check">{addons.includes(item.id)?'✓':'+'}</span>
+              <span className="addon-title">{item.label}</span>
+              <span className="addon-cost">{item.price}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="estimator-action-bar">
+        <div>
+          <span className="summary-label">Configured Scope:</span>
+          <p className="summary-text">{daysLabel} · {coverageLabel} {addons.length>0?`· +${addons.length} Add-on${addons.length>1?'s':''}`:''}</p>
+        </div>
+        <button type="button" className="button gold" onClick={apply}>
+          Apply scope to inquiry form <ArrowDown size={16}/>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Booking({user,services,settings}:{user:User;services:Item[];settings:typeof defaults}){
+  const [selected,setSelected]=useState<string[]>([]);
+  const [budgetVal,setBudgetVal]=useState('');
+  const [messageVal,setMessageVal]=useState('');
+  const [status,setStatus]=useState('');
+  const [busy,setBusy]=useState(false);
+  const [receipt,setReceipt]=useState('');
+  const [lastInquiry,setLastInquiry]=useState<any>(null);
+
+  useEffect(()=>{
+    const s=new URLSearchParams(location.search).get('service');
+    if(s)setSelected([s]);
+    else if(services.length)setSelected([services[0].title]);
+  },[services]);
+
+  const handleApplyEstimate=(plan:{services:string[];budget:string;note:string})=>{
+    setSelected(plan.services);
+    setBudgetVal(plan.budget);
+    setMessageVal(prev=>prev?prev+'\n\n'+plan.note:plan.note);
+    const formEl=document.getElementById('booking-inquiry-form');
+    if(formEl)formEl.scrollIntoView({behavior:'smooth'});
+  };
+
+  async function submit(e:FormEvent<HTMLFormElement>){
+    e.preventDefault();
+    const data=new FormData(e.currentTarget);
+    const payload={
+      name:String(data.get('name')||''),
+      contact:String(data.get('contact')||''),
+      eventType:String(data.get('eventType')||''),
+      date:String(data.get('date')||''),
+      location:String(data.get('location')||''),
+      services:selected,
+      budget:String(data.get('budget')||''),
+      message:String(data.get('message')||''),
+      reference:String(data.get('reference')||''),
+      consent:data.get('consent')==='on'
+    };
+    setBusy(true);
+    setStatus('');
+    try{
+      const d=await api('bookings',payload);
+      setReceipt(d.id);
+      setLastInquiry(payload);
+    }catch(e){
+      setStatus((e as Error).message);
+    }finally{
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="section inner-page booking-page">
+      <div>
+        <Eyebrow>LET’S CREATE SOMETHING MEANINGFUL</Eyebrow>
+        <h1>Every great story<br/>starts with <em>hello.</em></h1>
+        <p className="intro">Tell us a little about your occasion or creative idea. We’ll work out the possibilities together.</p>
+        <PackageEstimator onApply={handleApplyEstimate}/>
+        <ContactLinks settings={settings}/>
+        <img className="booking-photo" src="/images/wedding-1.jpg" alt="Details from a wedding celebration"/>
+        <p className="caption">Your inquiry starts a conversation. Dates and pricing are confirmed personally.</p>
+      </div>
+      <div>
+        {receipt?<div className="success"><div className="success-icon"><Check size={32}/></div><h2>Your story<br/>starts <em>here.</em></h2><p>Your inquiry has been saved for the studio and forwarded to nirajpaul1991@gmail.com.</p><div className="receipt-badge"><span>Reference code</span><code>{receipt.slice(0,8).toUpperCase()}</code></div><div className="receipt-actions">{user&&<Button href="/purchases">View your library <ArrowRight size={16}/></Button>}{settings.phone&&<a className="button outline" href={`https://wa.me/${settings.phone.replace(/\D/g,'')}?text=${encodeURIComponent('Hello Auré Studio, I just submitted booking inquiry #'+receipt.slice(0,8).toUpperCase())}`} target="_blank" rel="noopener noreferrer">Message on WhatsApp <ArrowUpRight size={16}/></a>}<a className="button outline" href={`mailto:${settings.email||'nirajpaul1991@gmail.com'}?subject=${encodeURIComponent('New Booking Inquiry #'+receipt.slice(0,8).toUpperCase()+' - '+(lastInquiry?.name||'Client'))}&body=${encodeURIComponent('Hello Auré Studio,\n\nI have submitted a new booking inquiry.\n\nReference: #'+receipt.slice(0,8).toUpperCase()+'\nClient Name: '+(lastInquiry?.name||'')+'\nContact: '+(lastInquiry?.contact||'')+'\nOccasion: '+(lastInquiry?.eventType||'')+'\nTarget Date: '+(lastInquiry?.date||'')+'\nLocation: '+(lastInquiry?.location||'')+'\nServices: '+((lastInquiry?.services||[]).join(', '))+'\nBudget: '+(lastInquiry?.budget||'Not specified')+'\n\nClient Vision / Message:\n'+(lastInquiry?.message||'None')+'\n\nThank you!')}`} target="_blank" rel="noopener noreferrer">Email nirajpaul1991@gmail.com <ArrowUpRight size={16}/></a></div></div>:
+        <form id="booking-inquiry-form" className="booking-form" onSubmit={submit}>
+          <h3>A little about your vision</h3>
+          <div className="form-row">
+            <label>Your name<input name="name" placeholder="How should we call you?" minLength={2} maxLength={100} required defaultValue={user?.displayName.includes('@')?'':user?.displayName||''}/></label>
+            <label>Email or phone<input name="contact" placeholder="So we can reach you" required maxLength={200} defaultValue={user?.email||''}/></label>
+          </div>
+          <div className="form-row">
+            <label>The occasion<select name="eventType" required defaultValue=""><option value="" disabled>Select your occasion</option>{['Wedding','Pre-wedding','Engagement','Birthday','Family event','Portrait session','AI editing project','Other'].map(t=><option key={t}>{t}</option>)}</select></label>
+            <label>Event date / target date<input type="date" name="date" required min={new Date().toISOString().slice(0,10)}/></label>
+          </div>
+          <label>Location<input name="location" placeholder="City, venue, or remote project" required minLength={2} maxLength={200}/></label>
+          <fieldset>
+            <legend>What can we create together?</legend>
+            <div className="service-options">
+              {[...new Set([...services.map(s=>s.title),'AI video editing',...selected])].map(s=><label key={s}><input type="checkbox" checked={selected.includes(s)} onChange={e=>setSelected(e.target.checked?[...selected,s]:selected.filter(x=>x!==s))}/><span>{s}</span></label>)}
+            </div>
+          </fieldset>
+          <label>Budget <span className="optional">optional</span>
+            <input name="budget" placeholder="Your approximate budget in INR" maxLength={80} value={budgetVal} onChange={e=>setBudgetVal(e.target.value)}/>
+          </label>
+          <label>Tell us your story
+            <textarea name="message" placeholder="The mood, the moments, the idea you have in mind…" rows={5} maxLength={4000} value={messageVal} onChange={e=>setMessageVal(e.target.value)}/>
+          </label>
+          <label>Reference link <span className="optional">optional</span><input name="reference" type="url" placeholder="https://" maxLength={2000}/></label>
+          <label className="consent"><input type="checkbox" name="consent" required/><span>I agree to share these details with the studio for this inquiry. <a href="/privacy">Privacy notice</a></span></label>
+          {status&&<p className="notice" role="alert">{status}</p>}
+          <button className="button gold wide" disabled={busy||!selected.length}>{busy?<LoaderCircle className="spin" size={17}/>:<>Send your inquiry <ArrowUpRight size={18}/></>}</button>
+          {user?<p className="caption">Signed in as {user.displayName}. Your inquiry will sync with your library.</p>:<p className="caption">No sign-in required. Have an account? <a href="/signin-with-chatgpt?return_to=/booking">Sign in to sync with your library</a>.</p>}
+        </form>}
+      </div>
+    </section>
+  );
+}
 function Account({user}:{user:User}){const [data,setData]=useState<any>(null),[error,setError]=useState('');useEffect(()=>{if(user)api('account').then(setData).catch(e=>setError(e.message));},[]);return <section className="section inner-page"><Eyebrow>YOUR PERSONAL COLLECTION</Eyebrow><h1>Good stories.<br/><em>Always with you.</em></h1>{!user?<div className="empty"><ShoppingBag size={30}/><h3>Your films have a home here.</h3><p>Sign in to view your purchases and booking inquiries.</p><a target="_top" className="button gold" href="/signin-with-chatgpt?return_to=/purchases">Sign in to your library <ArrowRight size={17}/></a></div>:<><p className="intro">Welcome, {user.displayName}. <a className="subtle-link" target="_top" href="/signout-with-chatgpt?return_to=/">Sign out</a></p>{error&&<p className="notice">{error}</p>}{!data&&!error&&<p>Loading your library…</p>}{data&&<><h3 className="account-heading">My purchases <span>{data.purchases.length}</span></h3>{data.purchases.length?<div className="film-grid">{data.purchases.map((p:any)=><a className="purchase-card" href={'/films/'+p.video_id} key={p.video_id}>{p.image&&<img src={p.image} alt={p.title}/>}<h3>{p.title}</h3><p>{p.status==='refunded'?'Refunded · Access withdrawn':p.available?'Watch your film →':'Film currently unavailable'}</p><small>{money(p.amount)} · {new Date(p.created_at).toLocaleDateString()}</small></a>)}</div>:<Empty title="Your collection is waiting for its first story." text="Purchased films will appear here once payment has been verified."/>}<h3 className="account-heading">Your inquiries</h3>{data.inquiries.length?<div className="data-table">{data.inquiries.map((i:any)=><div key={i.id}><span>Inquiry #{i.id.slice(0,8)}</span><time>{new Date(i.created_at).toLocaleDateString()}</time><span className="status-chip">{i.status}</span></div>)}</div>:<p className="muted">No inquiries yet. Let’s create something together.</p>}</>}</>}</section>;}
 function Credits(){const [credits,setCredits]=useState<any>(null);useEffect(()=>{Promise.all(['/images/credits.json','/images/collection-credits.json'].map(url=>fetch(url).then(r=>r.json()))).then(groups=>setCredits(groups.flat()));},[]);return <section className="section inner-page prose"><Eyebrow>WITH CREDIT TO THE CREATORS</Eyebrow><h1>A shared <em>inspiration.</em></h1><p>This showcase features authentic photography and cinematic storytelling by Auré Studio alongside curated creative references licensed under the Unsplash License. Films are official embeds of the supplied Heartwave references.</p><div className="credit-list">{Array.isArray(credits)?credits.map((c:any)=><article key={c.file}><img src={'/images/'+c.file} alt={c.description} loading="lazy"/><div><h3>{c.photographer}</h3><p>{c.description}</p><a className="text-link" href={c.source} target="_blank" rel="noreferrer">Original photograph <ArrowUpRight size={14}/></a></div></article>):'Loading image credits…'}</div><a className="text-link" href="https://unsplash.com/license" target="_blank" rel="noreferrer">Unsplash License <ArrowUpRight size={16}/></a></section>;}
 const blankItem={kind:'video',title:'',category:'Wedding Films',description:'',image:'',access:'public',price:0,youtube:'',originalKey:'',previewKey:'',previewType:'blurred',previewSeconds:20,duration:'',rightsConfirmed:false,inclusions:'',enabled:true,published:false};
