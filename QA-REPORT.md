@@ -23,3 +23,9 @@ No real payment was made. Razorpay test/live keys, its webhook secret, productio
 Reference photographs and music films are clearly credited. Authorized studio media, contact details and sale prices have not been supplied. The initial store therefore has no premium listings. No email or WhatsApp notifications are configured. AI editing is an inquiry service, not an automated enhancement engine. Large-file resumable uploads and adaptive HLS are not implemented; current MP4 originals are limited to 90 MB.
 
 Local test data and secrets are excluded from the published source and archive.
+
+## Follow-up — 16 October 2026
+
+The live mobile menu opened, but clicking Photography closed the menu without navigating. The browser reported Vinext client-router and prefetch TypeErrors. Studio links now use native anchors, so navigation does not depend on that failing router path. The mobile toggle has a 44px touch target, a navigation association, and Escape dismissal. Local browser verification confirmed that selecting Photography loads its page.
+
+The photography collection contains 24 additional licensed reference images (28 gallery photographs in total), with photographer credits. All 24 JPEGs decoded successfully and have unique file hashes. The new assets total 4,243,248 bytes. Browser checks verified the 28-card collection, four-image landscape filter, lightbox opening/closing, menu Escape dismissal, and no horizontal overflow at 390px. Image additions remain illustrative moodboard content, not claims of studio client work.

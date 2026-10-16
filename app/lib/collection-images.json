@@ -1,0 +1,218 @@
+[
+  {
+    "id": "collection-01",
+    "kind": "image",
+    "title": "Together in tradition",
+    "category": "Weddings",
+    "image": "/images/collection-01.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Royal Photography"
+  },
+  {
+    "id": "collection-02",
+    "kind": "image",
+    "title": "A quiet promise",
+    "category": "Pre-wedding",
+    "image": "/images/collection-02.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "ARTO SURAJ"
+  },
+  {
+    "id": "collection-03",
+    "kind": "image",
+    "title": "Grace in gold",
+    "category": "Portraits",
+    "image": "/images/collection-03.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "ARTO SURAJ"
+  },
+  {
+    "id": "collection-04",
+    "kind": "image",
+    "title": "A day with your people",
+    "category": "Celebrations",
+    "image": "/images/collection-04.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Vitaly Gariev"
+  },
+  {
+    "id": "collection-05",
+    "kind": "image",
+    "title": "Sacred moments",
+    "category": "Weddings",
+    "image": "/images/collection-05.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "ARTO SURAJ"
+  },
+  {
+    "id": "collection-06",
+    "kind": "image",
+    "title": "Where the sea meets us",
+    "category": "Pre-wedding",
+    "image": "/images/collection-06.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Fotógrafo Samuel Cruz"
+  },
+  {
+    "id": "collection-07",
+    "kind": "image",
+    "title": "The art of presence",
+    "category": "Portraits",
+    "image": "/images/collection-07.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Ionela Mat"
+  },
+  {
+    "id": "collection-08",
+    "kind": "image",
+    "title": "Make a wish",
+    "category": "Celebrations",
+    "image": "/images/collection-08.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Alexander Mass"
+  },
+  {
+    "id": "collection-09",
+    "kind": "image",
+    "title": "Vows by the ocean",
+    "category": "Weddings",
+    "image": "/images/collection-09.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Nathan Dumlao"
+  },
+  {
+    "id": "collection-10",
+    "kind": "image",
+    "title": "Golden silhouettes",
+    "category": "Pre-wedding",
+    "image": "/images/collection-10.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "雙 film"
+  },
+  {
+    "id": "collection-11",
+    "kind": "image",
+    "title": "In the afternoon light",
+    "category": "Portraits",
+    "image": "/images/collection-11.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Philipp Lansing"
+  },
+  {
+    "id": "collection-12",
+    "kind": "image",
+    "title": "One beautiful wish",
+    "category": "Celebrations",
+    "image": "/images/collection-12.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Zaven Baghdasaryan"
+  },
+  {
+    "id": "collection-13",
+    "kind": "image",
+    "title": "Hands, held forever",
+    "category": "Weddings",
+    "image": "/images/collection-13.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Nathan Dumlao"
+  },
+  {
+    "id": "collection-14",
+    "kind": "image",
+    "title": "Two hearts, one horizon",
+    "category": "Pre-wedding",
+    "image": "/images/collection-14.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "CR"
+  },
+  {
+    "id": "collection-15",
+    "kind": "image",
+    "title": "A timeless portrait",
+    "category": "Portraits",
+    "image": "/images/collection-15.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Albert Dera"
+  },
+  {
+    "id": "collection-16",
+    "kind": "image",
+    "title": "Little milestones",
+    "category": "Celebrations",
+    "image": "/images/collection-16.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Rahel Daniel"
+  },
+  {
+    "id": "collection-17",
+    "kind": "image",
+    "title": "Love, surrounded",
+    "category": "Weddings",
+    "image": "/images/collection-17.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "AMISH THAKKAR"
+  },
+  {
+    "id": "collection-18",
+    "kind": "image",
+    "title": "An evening together",
+    "category": "Pre-wedding",
+    "image": "/images/collection-18.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Galih Jelih"
+  },
+  {
+    "id": "collection-19",
+    "kind": "image",
+    "title": "A new chapter",
+    "category": "Weddings",
+    "image": "/images/collection-19.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "ARTO SURAJ"
+  },
+  {
+    "id": "collection-20",
+    "kind": "image",
+    "title": "Until the light fades",
+    "category": "Pre-wedding",
+    "image": "/images/collection-20.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Max Ovcharenko"
+  },
+  {
+    "id": "collection-21",
+    "kind": "image",
+    "title": "The mountain breathes",
+    "category": "Cinematic landscapes",
+    "image": "/images/collection-21.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Cosmic Timetraveler"
+  },
+  {
+    "id": "collection-22",
+    "kind": "image",
+    "title": "Layers of blue",
+    "category": "Cinematic landscapes",
+    "image": "/images/collection-22.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Alessio Soggetti"
+  },
+  {
+    "id": "collection-23",
+    "kind": "image",
+    "title": "Into the monsoon",
+    "category": "Cinematic landscapes",
+    "image": "/images/collection-23.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Supriyo Maity"
+  },
+  {
+    "id": "collection-24",
+    "kind": "image",
+    "title": "A world in motion",
+    "category": "Cinematic landscapes",
+    "image": "/images/collection-24.jpg",
+    "description": "Illustrative photograph • Unsplash",
+    "credit": "Adi Albulescu"
+  }
+]
