@@ -1,7 +1,7 @@
 'use client';
 import { useEffect,useRef,useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowUpRight,ArrowRight,Play,Camera,Film,Sparkles,ShoppingBag,Menu,X,ChevronDown,ChevronLeft,ChevronRight,Check,Lock,Search,ArrowLeft,Plus,Upload,Settings,Inbox,Images,Users,RefreshCw,LoaderCircle,ArrowDown } from 'lucide-react';
-import {defaults,type Item,testimonials,faqs,featuredStory} from './lib/catalog';
+import { ArrowUpRight,ArrowRight,Play,Camera,Film,Sparkles,ShoppingBag,Menu,X,ChevronDown,ChevronLeft,ChevronRight,Check,Lock,Search,ArrowLeft,Plus,Upload,Settings,Inbox,Images,Users,RefreshCw,LoaderCircle,ArrowDown,Heart,Sliders,Calendar,ShieldCheck,Download,Palette,Eye,Copy,Share2 } from 'lucide-react';
+import {defaults,type Item,testimonials,faqs,featuredStory,moodboardData,proofingGalleries,colorGradingScenes,type ColorGradingScene,type ProofingGallery,type ProofingPhoto} from './lib/catalog';
 type Catalog={settings:typeof defaults;films:Item[];images:Item[];services:Item[];categories:Item[];sampleGallery:boolean};
 type User={userId:string;email:string;displayName:string}|null;
 const money=(n:number)=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n/100);
@@ -9,7 +9,7 @@ async function api(path:string,body?:unknown){const r=await fetch('/api/'+path,b
 function Button({children,href,onClick,outline=false,...props}:{children:ReactNode;href?:string;onClick?:()=>void;outline?:boolean;[k:string]:unknown}){const cls='button '+(outline?'outline':'gold');return href?<a className={cls} href={href}>{children}</a>:<button className={cls} onClick={onClick} {...props}>{children}</button>;}
 function Eyebrow({children}:{children:ReactNode}){return <div className="eyebrow"><span/>{children}</div>;}
 function Dialog({children,onClose,label}:{children:ReactNode;onClose:()=>void;label:string}){const ref=useRef<HTMLDialogElement>(null);useEffect(()=>{ref.current?.showModal();const close=()=>onClose();const d=ref.current;d?.addEventListener('close',close);document.body.style.overflow='hidden';return()=>{d?.removeEventListener('close',close);document.body.style.overflow='';};},[]);return <dialog ref={ref} aria-label={label} className="modal" onClick={e=>{if(e.target===e.currentTarget)onClose();}}><button className="close" onClick={onClose} aria-label="Close"><X size={22}/></button>{children}</dialog>;}
-export default function Studio({catalog,section='home',user,isAdmin=false,filmId}:{catalog:Catalog;section?:string;user:User;isAdmin?:boolean;filmId?:string}){const {settings:s,films,images,services}=catalog;const [menu,setMenu]=useState(false);const [lightbox,setLightbox]=useState<Item|null>(null);const [playing,setPlaying]=useState<Item|null>(null);const [filter,setFilter]=useState('All');const [search,setSearch]=useState('');const {isPlaying:playingAudio,toggle:toggleAudio}=useAmbientAudio();const active=films.find(f=>f.id===filmId);const nav=[['Home','/','home'],['Photography','/photography','photography'],['Films','/films','films'],...(s.showAI?[['AI Cinematics','/ai','ai']]:[]),['Services','/services','services']];
+export default function Studio({catalog,section='home',user,isAdmin=false,filmId}:{catalog:Catalog;section?:string;user:User;isAdmin?:boolean;filmId?:string}){const {settings:s,films,images,services}=catalog;const [menu,setMenu]=useState(false);const [lightbox,setLightbox]=useState<Item|null>(null);const [playing,setPlaying]=useState<Item|null>(null);const [filter,setFilter]=useState('All');const [search,setSearch]=useState('');const [depositOpen,setDepositOpen]=useState(false);const {isPlaying:playingAudio,toggle:toggleAudio}=useAmbientAudio();const active=films.find(f=>f.id===filmId);const nav=[['Home','/','home'],['Photography','/photography','photography'],['Films','/films','films'],...(s.showAI?[['AI Cinematics','/ai','ai']]:[]),['Services','/services','services'],['Moodboard','/moodboard','moodboard'],['Client Portal','/client-portal','client-portal']];
  const lightboxIndex=lightbox?images.findIndex(im=>im.id===lightbox.id):-1;
  const prevLightbox=()=>{if(lightboxIndex>0)setLightbox(images[lightboxIndex-1]);else if(lightboxIndex===0)setLightbox(images[images.length-1]);};
  const nextLightbox=()=>{if(lightboxIndex>=0&&lightboxIndex<images.length-1)setLightbox(images[lightboxIndex+1]);else if(lightboxIndex===images.length-1)setLightbox(images[0]);};
@@ -22,6 +22,7 @@ export default function Studio({catalog,section='home',user,isAdmin=false,filmId
  <div className="discipline"><span>Weddings & love stories</span><i>✦</i><span>Life’s little celebrations</span><i>✦</i><span>Portraits with soul</span><i>✦</i><span>A new cinematic perspective</span></div>
  <section id="selected" className="section"><div className="section-head"><div><Eyebrow>THE MOTION COLLECTION</Eyebrow><h2>Some stories deserve<br/>to be <em>felt again.</em></h2></div><div className="section-aside"><p>Love, atmosphere, and the art of storytelling.<br/>A collection to get lost in.</p><a className="text-link" href="/films">Explore the film collection <ArrowUpRight size={16}/></a></div></div><div className="film-grid">{films.slice(0,6).map((f,i)=><FilmCard key={f.id} film={f} index={i} onPlay={()=>setPlaying(f)}/>)}</div>{films.some(f=>f.reference)&&<p className="caption">Creative references by Heartwave · Official YouTube embeds · Not studio client work</p>}</section>
  <FeaturedStorySection/>
+ <BeforeAfterSlider/>
  <section className="section gallery-section"><div className="section-head"><div><Eyebrow>STILL FRAMES. ENDLESS FEELING.</Eyebrow><h2>Life, in its <em>beautiful detail.</em></h2></div><a className="text-link" href="/photography">View photography <ArrowUpRight size={17}/></a></div><div className="editorial-gallery">{images.slice(0,4).map((im,i)=><button className={'gallery-tile tile-'+i} key={im.id} onClick={()=>setLightbox(im)}><img src={im.image} alt={im.title} loading="lazy"/><div><span>{im.category}</span><ArrowUpRight size={22}/></div></button>)}</div>{images.length>4&&<div className="collection-strip">{images.slice(4,12).map(im=><button key={im.id} onClick={()=>setLightbox(im)} aria-label={"View "+im.title}><img src={im.image} alt={im.title} loading="lazy" decoding="async"/><span>{im.category}</span></button>)}</div>}<a className="text-link collection-more" href="/photography">Explore all {images.length} photographs <ArrowUpRight size={17}/></a>{catalog.sampleGallery&&<p className="caption">Featuring authentic client stories alongside curated creative references by Auré Studio.</p>}</section>
  {s.showAI&&<section className="ai-feature"><div className="ai-photo"><img src="/images/landscape.jpg" loading="lazy" alt="Mountain lake in cinematic evening light"/><span><Sparkles size={14}/> A NEW CREATIVE PERSPECTIVE</span></div><div className="ai-copy"><Eyebrow>HUMAN VISION. NEW POSSIBILITIES.</Eyebrow><h2>Beyond the ordinary.<br/><em>Into the cinematic.</em></h2><p>Have a film that could become something more? Explore a creative conversation around restoration, cinematic color, and AI-assisted storytelling.</p><div className="ai-tags"><span>Color & atmosphere</span><span>Restoration</span><span>Creative effects</span></div><a className="text-link" href="/ai">Discover AI cinematics <ArrowUpRight size={18}/></a></div></section>}
  <section className="section"><div className="section-head"><div><Eyebrow>MADE AROUND YOU</Eyebrow><h2>Your story. <em>Our craft.</em></h2></div><a href="/services" className="text-link">Explore our services <ArrowUpRight size={17}/></a></div><div className="service-grid">{services.slice(0,3).map((sv,i)=><a key={sv.id} href={'/booking?service='+encodeURIComponent(sv.title)} className="service-card"><span className="service-number">0{i+1}</span>{i===0?<Camera/>:i===1?<Film/>:<Sparkles/>}<h3>{sv.title}</h3><p>{sv.description}</p><span className="service-bottom">Let’s talk about your vision <ArrowUpRight size={18}/></span></a>)}</div></section>
@@ -31,17 +32,20 @@ export default function Studio({catalog,section='home',user,isAdmin=false,filmId
  {section==='photography'&&<section className="section inner-page"><Eyebrow>THE PHOTOGRAPHY COLLECTION</Eyebrow><h1>A fraction of a second.<br/><em>A lifetime of feeling.</em></h1><p className="intro">The glances, the joy, the unscripted moments in between.</p><p className="collection-count">{images.length} photographs · Select a category or open a frame to explore.</p><Filters items={images} filter={filter} setFilter={setFilter}/><div className="photo-grid">{filtered(images).map(im=><button className="photo-card" key={im.id} onClick={()=>setLightbox(im)}><img src={im.image} alt={im.title} loading="lazy"/><div><h3>{im.title}</h3><span>{im.category} <ArrowUpRight size={16}/></span></div></button>)}</div>{!filtered(images).length&&<Empty title="A new collection is on its way." text="Explore another category in the meantime."/>}{catalog.sampleGallery&&<p className="caption">Featuring authentic photography by Auré Studio alongside curated creative references. <a href="/credits">View photographers & credits</a>.</p>}</section>}
  {section==='films'&&!filmId&&<section className="section inner-page"><Eyebrow>THE FILM COLLECTION</Eyebrow><h1>More than moving pictures.<br/><em>Moving stories.</em></h1><div className="collection-toolbar"><p className="intro">Discover films, creative references, and premium releases.</p><label className="search"><Search size={18}/><input aria-label="Search films" placeholder="Find a film…" value={search} onChange={e=>setSearch(e.target.value)}/></label></div><Filters items={films} filter={filter} setFilter={setFilter}/><div className="film-grid">{filtered(films).map((f,i)=><FilmCard film={f} index={i} key={f.id} onPlay={()=>setPlaying(f)}/>)}</div>{!filtered(films).length&&<Empty title="No films match this search." text="Try another title or category."/>}<p className="caption">Reference films are credited to their original creator and are never offered for purchase.</p>{s.showStore&&<div className="store-callout"><Lock size={25}/><div><h3>A collection worth keeping.</h3><p>Explore premium releases and revisit your purchased films in your personal library.</p></div><Button href="/store" outline>Visit the film store <ArrowUpRight size={17}/></Button></div>}</section>}
  {filmId&&(active?<FilmDetail film={active} user={user} onPlay={()=>setPlaying(active)}/>:<section className="section inner-page"><Empty title="This film is not available." text="It may be private, unpublished, or no longer in the collection."/><Button href="/films">Back to films</Button></section>)}
- {section==='ai'&&<><section className="section inner-page ai-page"><Eyebrow>THE NEXT FRAME</Eyebrow><h1>Your imagination.<br/><em>A new dimension.</em></h1><p className="intro">Give existing footage a fresh perspective, or explore a cinematic idea from the beginning.</p><div className="ai-wide"><img src="/images/landscape.jpg" alt="Cinematic mountain landscape"/><span><Sparkles size={17}/> THE POSSIBILITIES START WITH YOUR IDEA</span></div><div className="section-head"><h2>Let’s explore what<br/>your film <em>could become.</em></h2><div className="section-aside"><p>Every project starts with a review of your footage, creative goals, and what is technically possible. Availability and scope are confirmed in your quote.</p><Button href="/booking?service=AI%20video%20editing">Request AI video editing <ArrowUpRight size={17}/></Button></div></div><div className="cinematic-moodboard">{images.filter(im=>im.category==='Cinematic landscapes').map(im=><button key={im.id} onClick={()=>setLightbox(im)} aria-label={"View "+im.title}><img src={im.image} alt={im.title} loading="lazy" decoding="async"/><span>{im.title}</span></button>)}</div><div className="service-grid">{[['01','Color & atmosphere','Explore cinematic grading, a consistent visual style, and a mood that brings your story together.'],['02','Restoration & clarity','Discuss sharpening, noise reduction, and restoration options for footage that deserves another look.'],['03','A different kind of story','Consider AI-assisted effects, transitions, generated scenes, and thoughtfully edited highlights.']].map(([n,t,d])=><article className="service-card" key={n}><span className="service-number">{n}</span><Sparkles/><h3>{t}</h3><p>{d}</p></article>)}</div></section><BookingBanner/></>}
- {section==='services'&&<><section className="section inner-page"><Eyebrow>CRAFTED FOR YOUR OCCASION</Eyebrow><h1>Good stories begin<br/>with <em>a conversation.</em></h1><p className="intro">Thoughtful photography and films, with a scope shaped around you.</p><div className="services-list">{services.map((sv,i)=><article key={sv.id}><img src={sv.image} alt={sv.title}/><div><span className="eyebrow">0{i+1} / {sv.category}</span><h2>{sv.title}</h2><p>{sv.description}</p><ul>{sv.inclusions?.split('\n').filter(Boolean).map(x=><li key={x}><Check size={15}/>{x}</li>)}</ul><div className="service-price"><span>{sv.price?`From ${money(sv.price)}`:'A personal quote, made for you'}</span><Button href={'/booking?service='+encodeURIComponent(sv.title)} outline>Request a quote <ArrowUpRight size={17}/></Button></div></div></article>)}</div></section><FaqSection title="Package & Booking Inquiries" subtitle="Everything you need to know about destination travel, turnaround times, and booking your celebration."/><BookingBanner/></>}
- {section==='booking'&&<Booking user={user} services={services} settings={s} />}
+ {section==='ai'&&<><section className="section inner-page ai-page"><Eyebrow>THE NEXT FRAME</Eyebrow><h1>Your imagination.<br/><em>A new dimension.</em></h1><p className="intro">Give existing footage a fresh perspective, or explore a cinematic idea from the beginning.</p><div className="ai-wide"><img src="/images/landscape.jpg" alt="Cinematic mountain landscape"/><span><Sparkles size={17}/> THE POSSIBILITIES START WITH YOUR IDEA</span></div><div className="section-head"><h2>Let’s explore what<br/>your film <em>could become.</em></h2><div className="section-aside"><p>Every project starts with a review of your footage, creative goals, and what is technically possible. Availability and scope are confirmed in your quote.</p><Button href="/booking?service=AI%20video%20editing">Request AI video editing <ArrowUpRight size={17}/></Button></div></div><div className="cinematic-moodboard">{images.filter(im=>im.category==='Cinematic landscapes').map(im=><button key={im.id} onClick={()=>setLightbox(im)} aria-label={"View "+im.title}><img src={im.image} alt={im.title} loading="lazy" decoding="async"/><span>{im.title}</span></button>)}</div><BeforeAfterSlider/><div className="service-grid">{[['01','Color & atmosphere','Explore cinematic grading, a consistent visual style, and a mood that brings your story together.'],['02','Restoration & clarity','Discuss sharpening, noise reduction, and restoration options for footage that deserves another look.'],['03','A different kind of story','Consider AI-assisted effects, transitions, generated scenes, and thoughtfully edited highlights.']].map(([n,t,d])=><article className="service-card" key={n}><span className="service-number">{n}</span><Sparkles/><h3>{t}</h3><p>{d}</p></article>)}</div></section><BookingBanner/></>}
+ {section==='services'&&<><section className="section inner-page"><Eyebrow>CRAFTED FOR YOUR OCCASION</Eyebrow><h1>Good stories begin<br/>with <em>a conversation.</em></h1><p className="intro">Thoughtful photography and films, with a scope shaped around you.</p><div className="services-list">{services.map((sv,i)=><article key={sv.id}><img src={sv.image} alt={sv.title}/><div><span className="eyebrow">0{i+1} / {sv.category}</span><h2>{sv.title}</h2><p>{sv.description}</p><ul>{sv.inclusions?.split('\n').filter(Boolean).map(x=><li key={x}><Check size={15}/>{x}</li>)}</ul><div className="service-price"><span>{sv.price?`From ${money(sv.price)}`:'A personal quote, made for you'}</span><Button href={'/booking?service='+encodeURIComponent(sv.title)} outline>Request a quote <ArrowUpRight size={17}/></Button></div></div></article>)}</div><div className="services-deposit-box"><Eyebrow>CALENDAR EXCLUSIVITY GUARANTEE</Eyebrow><h2>Ready to hold your wedding date?<br/><em>Reserve with a ₹25,000 token deposit.</em></h2><p>We commit to only one wedding production per weekend worldwide. Lock your date early to secure our lead cinema and photography team.</p><button type="button" className="button gold" onClick={()=>setDepositOpen(true)}>Hold Wedding Date (₹25,000) <Calendar size={16}/></button></div></section><FaqSection title="Package & Booking Inquiries" subtitle="Everything you need to know about destination travel, turnaround times, and booking your celebration."/><BookingBanner/></>}
+ {section==='booking'&&<Booking user={user} services={services} settings={s} onOpenDeposit={()=>setDepositOpen(true)}/>}
+ {section==='moodboard'&&<MoodboardCreator user={user} settings={s}/>}
+ {section==='client-portal'&&<ClientProofingPortal onOpenLightbox={setLightbox}/>}
  {section==='store'&&<section className="section inner-page"><Eyebrow>THE PRIVATE COLLECTION</Eyebrow><h1>A story to return to.<br/><em>Whenever you like.</em></h1><p className="intro">Watch a preview, find a film you love, and make it part of your library.</p><div className="film-grid">{films.filter(f=>f.access==='premium').map((f,i)=><FilmCard key={f.id} film={f} index={i} onPlay={()=>setPlaying(f)}/>)}</div>{!films.some(f=>f.access==='premium')&&<div className="premium-empty"><img src="/images/landscape.jpg" alt="Cinematic landscape"/><div><Lock/><Eyebrow>A LITTLE ANTICIPATION</Eyebrow><h2>Something special<br/>is <em>in the making.</em></h2><p>Premium films will appear here when the studio releases its first collection. Until then, explore the inspiration behind the work.</p><Button href="/films">Explore free films <ArrowRight size={17}/></Button></div></div>}</section>}
  {section==='purchases'&&<Account user={user} />}
  {section==='admin'&&<Admin user={user} allowed={isAdmin} settings={s}/>}
  {section==='credits'&&<Credits/>}
  {section==='privacy'&&<section className="section inner-page prose"><Eyebrow>YOUR INFORMATION</Eyebrow><h1>Privacy, <em>with care.</em></h1><h3>Inquiries and your account</h3><p>When you sign in, we receive your account identifier, name if available, and email. Booking details are stored so the studio can respond, manage your inquiry, and provide your purchase library. Only administrators can see all inquiries.</p><h3>Payments and media</h3><p>Payments are handled by Razorpay when configured. This site stores order references and payment status, never card details. Access to purchased media is checked on the server. Playback protection cannot prevent all screen recording.</p><h3>External content</h3><p>YouTube embeds load only when you choose to play a reference film. Payment checkout loads when you choose to purchase. These providers apply their own privacy policies. No advertising analytics are installed.</p><h3>Requests and retention</h3><p>Use the booking form to request correction or deletion of personal details. The studio should review and remove outdated inquiries and retain purchase records only as required for service and applicable obligations.</p></section>}
- </main><footer><div className="footer-top"><a href="/" className="brand"><span className="brand-symbol">{s.logoUrl?<img className="brand-logo" src={s.logoUrl} alt=""/>:<>✧</>}</span><span>{s.name.replace(/ Studio$/i,'')}<small>STUDIO</small></span></a><p>{s.tagline}</p><div>{s.email&&<a href={'mailto:'+s.email}>Email <ArrowUpRight size={14}/></a>}{s.instagram&&<a href={s.instagram} target="_blank" rel="noreferrer">Instagram <ArrowUpRight size={14}/></a>}{s.youtube&&<a href={s.youtube} target="_blank" rel="noreferrer">YouTube <ArrowUpRight size={14}/></a>}<a href="/booking">Start a conversation <ArrowUpRight size={14}/></a></div></div><ContactLinks settings={s}/><div className="footer-bottom"><span>© {new Date().getFullYear()} {s.name}. Every frame, a feeling.</span><div><a href="/credits">Image credits</a><a href="/privacy">Privacy</a><a href="/admin">Studio admin</a></div><span>MADE FOR THE MOMENTS THAT STAY.</span></div></footer>
+ </main><footer><div className="footer-top"><a href="/" className="brand"><span className="brand-symbol">{s.logoUrl?<img className="brand-logo" src={s.logoUrl} alt=""/>:<>✧</>}</span><span>{s.name.replace(/ Studio$/i,'')}<small>STUDIO</small></span></a><p>{s.tagline}</p><div><a href="/moodboard">Moodboard <Palette size={14}/></a><a href="/client-portal">Client Portal <Lock size={14}/></a>{s.email&&<a href={'mailto:'+s.email}>Email <ArrowUpRight size={14}/></a>}{s.instagram&&<a href={s.instagram} target="_blank" rel="noreferrer">Instagram <ArrowUpRight size={14}/></a>}{s.youtube&&<a href={s.youtube} target="_blank" rel="noreferrer">YouTube <ArrowUpRight size={14}/></a>}<a href="/booking">Start a conversation <ArrowUpRight size={14}/></a></div></div><ContactLinks settings={s}/><div className="footer-bottom"><span>© {new Date().getFullYear()} {s.name}. Every frame, a feeling.</span><div><a href="/moodboard">Moodboard Studio</a><a href="/client-portal">Client Portal</a><a href="/credits">Image credits</a><a href="/privacy">Privacy</a><a href="/admin">Studio admin</a></div><span>MADE FOR THE MOMENTS THAT STAY.</span></div></footer>
  {lightbox&&<Dialog label={lightbox.title} onClose={()=>setLightbox(null)}><div className="lightbox"><div className="lightbox-image-wrap">{images.length>1&&<button type="button" className="lightbox-nav prev" onClick={e=>{e.stopPropagation();prevLightbox();}} aria-label="Previous photograph"><ChevronLeft size={24}/></button>}<img src={lightbox.image} alt={lightbox.title}/>{images.length>1&&<button type="button" className="lightbox-nav next" onClick={e=>{e.stopPropagation();nextLightbox();}} aria-label="Next photograph"><ChevronRight size={24}/></button>}</div><div className="lightbox-meta"><div><span className="lightbox-category">{lightbox.category}</span><h3>{lightbox.title}</h3><p>{lightbox.description}</p></div>{lightboxIndex>=0&&<span className="lightbox-counter">{(lightboxIndex+1).toString().padStart(2,'0')} <i>/</i> {images.length.toString().padStart(2,'0')}</span>}</div></div></Dialog>}
  {playing&&<Dialog label={'Watch '+playing.title} onClose={()=>setPlaying(null)}><div className="player-modal"><Player film={playing}/><div className="player-caption"><h3>{playing.title}</h3><p>{playing.reference?'Creative reference by Heartwave • Official YouTube embed':playing.description}</p><a className="text-link" href={'/films/'+playing.id}>View film details <ArrowUpRight size={15}/></a></div></div></Dialog>}
+ {depositOpen&&<DateDepositModal settings={s} onClose={()=>setDepositOpen(false)}/>}
  {s.phone&&<FloatingWhatsApp phone={s.phone}/>}
  </>;
 }
@@ -477,7 +481,7 @@ function PackageEstimator({onApply}:{onApply:(plan:{services:string[];budget:str
   );
 }
 
-function Booking({user,services,settings}:{user:User;services:Item[];settings:typeof defaults}){
+function Booking({user,services,settings,onOpenDeposit}:{user:User;services:Item[];settings:typeof defaults;onOpenDeposit?:()=>void}){
   const [selected,setSelected]=useState<string[]>([]);
   const [budgetVal,setBudgetVal]=useState('');
   const [messageVal,setMessageVal]=useState('');
@@ -490,6 +494,13 @@ function Booking({user,services,settings}:{user:User;services:Item[];settings:ty
     const s=new URLSearchParams(location.search).get('service');
     if(s)setSelected([s]);
     else if(services.length)setSelected([services[0].title]);
+    const mb=new URLSearchParams(location.search).get('moodboard');
+    if(mb){
+      try{
+        const decoded=decodeURIComponent(mb);
+        setMessageVal(prev=>prev?prev+'\n\n'+decoded:decoded);
+      }catch(_){}
+    }
   },[services]);
 
   const handleApplyEstimate=(plan:{services:string[];budget:string;note:string})=>{
@@ -534,13 +545,32 @@ function Booking({user,services,settings}:{user:User;services:Item[];settings:ty
         <Eyebrow>LET’S CREATE SOMETHING MEANINGFUL</Eyebrow>
         <h1>Every great story<br/>starts with <em>hello.</em></h1>
         <p className="intro">Tell us a little about your occasion or creative idea. We’ll work out the possibilities together.</p>
+        {onOpenDeposit&&(
+          <div className="deposit-priority-card">
+            <div className="deposit-priority-head">
+              <span className="badge-exclusive">✦ INSTANT DATE HOLD</span>
+              <h3>Lock your wedding date</h3>
+            </div>
+            <p>Ready to guarantee studio availability before quote review? Freeze your date on our master production calendar with a ₹25,000 token deposit (100% credited to package).</p>
+            <button type="button" className="button gold" onClick={onOpenDeposit}>
+              Hold Wedding Date (₹25,000) <Calendar size={15}/>
+            </button>
+          </div>
+        )}
+        <a href="/moodboard" className="moodboard-helper-card">
+          <Palette size={18}/>
+          <div>
+            <strong>Curate Your Wedding Moodboard</strong>
+            <small>Select lighting, color swatches & narrative tempo →</small>
+          </div>
+        </a>
         <PackageEstimator onApply={handleApplyEstimate}/>
         <ContactLinks settings={settings}/>
         <img className="booking-photo" src="/images/wedding-1.jpg" alt="Details from a wedding celebration"/>
         <p className="caption">Your inquiry starts a conversation. Dates and pricing are confirmed personally.</p>
       </div>
       <div>
-        {receipt?<div className="success"><div className="success-icon"><Check size={32}/></div><h2>Your story<br/>starts <em>here.</em></h2><p>Your inquiry has been saved for the studio and forwarded to nirajpaul1991@gmail.com.</p><div className="receipt-badge"><span>Reference code</span><code>{receipt.slice(0,8).toUpperCase()}</code></div><div className="receipt-actions">{user&&<Button href="/purchases">View your library <ArrowRight size={16}/></Button>}{settings.phone&&<a className="button outline" href={`https://wa.me/${settings.phone.replace(/\D/g,'')}?text=${encodeURIComponent('Hello Auré Studio, I just submitted booking inquiry #'+receipt.slice(0,8).toUpperCase())}`} target="_blank" rel="noopener noreferrer">Message on WhatsApp <ArrowUpRight size={16}/></a>}<a className="button outline" href={`mailto:${settings.email||'nirajpaul1991@gmail.com'}?subject=${encodeURIComponent('New Booking Inquiry #'+receipt.slice(0,8).toUpperCase()+' - '+(lastInquiry?.name||'Client'))}&body=${encodeURIComponent('Hello Auré Studio,\n\nI have submitted a new booking inquiry.\n\nReference: #'+receipt.slice(0,8).toUpperCase()+'\nClient Name: '+(lastInquiry?.name||'')+'\nContact: '+(lastInquiry?.contact||'')+'\nOccasion: '+(lastInquiry?.eventType||'')+'\nTarget Date: '+(lastInquiry?.date||'')+'\nLocation: '+(lastInquiry?.location||'')+'\nServices: '+((lastInquiry?.services||[]).join(', '))+'\nBudget: '+(lastInquiry?.budget||'Not specified')+'\n\nClient Vision / Message:\n'+(lastInquiry?.message||'None')+'\n\nThank you!')}`} target="_blank" rel="noopener noreferrer">Email nirajpaul1991@gmail.com <ArrowUpRight size={16}/></a></div></div>:
+        {receipt?<div className="success"><div className="success-icon"><Check size={32}/></div><h2>Your story<br/>starts <em>here.</em></h2><p>Your inquiry has been saved for the studio and forwarded to nirajpaul1991@gmail.com.</p><div className="receipt-badge"><span>Reference code</span><code>{receipt.slice(0,8).toUpperCase()}</code></div>{onOpenDeposit&&<div className="receipt-deposit-cta"><p>Want to freeze your wedding date on our master calendar right now?</p><button type="button" className="button gold" onClick={onOpenDeposit}>Lock Date Now with ₹25,000 Deposit <ArrowUpRight size={16}/></button></div>}<div className="receipt-actions">{user&&<Button href="/purchases">View your library <ArrowRight size={16}/></Button>}{settings.phone&&<a className="button outline" href={`https://wa.me/${settings.phone.replace(/\D/g,'')}?text=${encodeURIComponent('Hello Auré Studio, I just submitted booking inquiry #'+receipt.slice(0,8).toUpperCase())}`} target="_blank" rel="noopener noreferrer">Message on WhatsApp <ArrowUpRight size={16}/></a>}<a className="button outline" href={`mailto:${settings.email||'nirajpaul1991@gmail.com'}?subject=${encodeURIComponent('New Booking Inquiry #'+receipt.slice(0,8).toUpperCase()+' - '+(lastInquiry?.name||'Client'))}&body=${encodeURIComponent('Hello Auré Studio,\n\nI have submitted a new booking inquiry.\n\nReference: #'+receipt.slice(0,8).toUpperCase()+'\nClient Name: '+(lastInquiry?.name||'')+'\nContact: '+(lastInquiry?.contact||'')+'\nOccasion: '+(lastInquiry?.eventType||'')+'\nTarget Date: '+(lastInquiry?.date||'')+'\nLocation: '+(lastInquiry?.location||'')+'\nServices: '+((lastInquiry?.services||[]).join(', '))+'\nBudget: '+(lastInquiry?.budget||'Not specified')+'\n\nClient Vision / Message:\n'+(lastInquiry?.message||'None')+'\n\nThank you!')}`} target="_blank" rel="noopener noreferrer">Email nirajpaul1991@gmail.com <ArrowUpRight size={16}/></a></div></div>:
         <form id="booking-inquiry-form" className="booking-form" onSubmit={submit}>
           <h3>A little about your vision</h3>
           <div className="form-row">
@@ -592,4 +622,865 @@ function Admin({user,allowed,settings}:{user:User;allowed:boolean;settings:typeo
  {['video','service'].includes(editing.kind)&&<label>Price in INR {editing.kind==='service'?'(0 = custom quote)':''}<input type="number" min={0} step="0.01" value={editing.price/100} onChange={e=>setEditing({...editing,price:Math.round(Number(e.target.value)*100)})}/></label>}{editing.kind==='service'&&<><label>Package inclusions (one per line)<textarea rows={4} value={editing.inclusions} onChange={e=>setEditing({...editing,inclusions:e.target.value})}/></label><label className="consent"><input type="checkbox" checked={editing.enabled} onChange={e=>setEditing({...editing,enabled:e.target.checked})}/>Service currently available</label></>}
  <label className="consent"><input type="checkbox" checked={editing.rightsConfirmed} onChange={e=>setEditing({...editing,rightsConfirmed:e.target.checked})}/>I own or have permission to publish this content.</label><label className="consent"><input type="checkbox" checked={editing.published} onChange={e=>setEditing({...editing,published:e.target.checked})}/>Publish this content</label><Button disabled={busy}>{busy?'Saving / uploading…':'Save content'} <Check size={17}/></Button></form></Dialog>}
  </section>;
+}
+
+function BeforeAfterSlider(){
+  const [activeIdx,setActiveIdx]=useState(0);
+  const [sliderPos,setSliderPos]=useState(50);
+  const containerRef=useRef<HTMLDivElement>(null);
+  const isDraggingRef=useRef(false);
+  const scene=colorGradingScenes[activeIdx]||colorGradingScenes[0];
+
+  const updatePosition=(clientX:number)=>{
+    if(!containerRef.current)return;
+    const rect=containerRef.current.getBoundingClientRect();
+    const x=Math.max(0,Math.min(clientX-rect.left,rect.width));
+    const percent=Math.round((x/rect.width)*100);
+    setSliderPos(percent);
+  };
+
+  const handlePointerDown=(e:React.PointerEvent)=>{
+    isDraggingRef.current=true;
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    updatePosition(e.clientX);
+  };
+
+  const handlePointerMove=(e:React.PointerEvent)=>{
+    if(isDraggingRef.current){
+      updatePosition(e.clientX);
+    }
+  };
+
+  const handlePointerUp=(e:React.PointerEvent)=>{
+    isDraggingRef.current=false;
+    try{(e.target as HTMLElement).releasePointerCapture?.(e.pointerId);}catch(_){}
+  };
+
+  return (
+    <section className="section color-grading-section">
+      <div className="section-head">
+        <div>
+          <Eyebrow>AURÉ COLOR SCIENCE · 4K CINEMA MASTER</Eyebrow>
+          <h2>Before & After:<br/><em>From Camera RAW to Cinema.</em></h2>
+        </div>
+        <div className="section-aside">
+          <p>Drag the split-screen slider to reveal our signature color science—transforming flat 10-bit sensor log footage into our proprietary Kodak-inspired film master.</p>
+        </div>
+      </div>
+
+      <div className="grading-scene-tabs" role="tablist" aria-label="Color grading scene selector">
+        {colorGradingScenes.map((s,idx)=>(
+          <button
+            key={s.id}
+            type="button"
+            role="tab"
+            aria-selected={idx===activeIdx}
+            className={`grading-scene-btn ${idx===activeIdx?'active':''}`}
+            onClick={()=>setActiveIdx(idx)}
+          >
+            <strong>{s.title}</strong>
+            <small>{s.location}</small>
+          </button>
+        ))}
+      </div>
+
+      <div
+        className="grading-slider-container"
+        ref={containerRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+      >
+        {/* Right / Base: Graded Cinema Master */}
+        <img
+          src={scene.image}
+          alt={scene.title+' - Graded Cinema Master'}
+          className="grading-img grading-after"
+          draggable={false}
+          loading="lazy"
+        />
+        <div className="grading-badge right">
+          <span className="badge-dot gold"/>
+          {scene.gradeLabel}
+        </div>
+
+        {/* Left / Clipped: Flat 10-Bit Sensor RAW */}
+        <div
+          className="grading-before-wrap"
+          style={{clipPath:`polygon(0 0, ${sliderPos}% 0, ${sliderPos}% 100%, 0 100%)`}}
+        >
+          <img
+            src={scene.image}
+            alt={scene.title+' - Flat Sensor Log RAW'}
+            className="grading-img grading-before"
+            draggable={false}
+            loading="lazy"
+          />
+          <div className="grading-badge left">
+            <span className="badge-dot gray"/>
+            {scene.logLabel}
+          </div>
+        </div>
+
+        {/* Divider bar & Handle */}
+        <div className="grading-divider" style={{left:`${sliderPos}%`}}>
+          <div className="grading-handle" aria-hidden="true">
+            <span className="handle-chevron">◀</span>
+            <span className="handle-divider-line"/>
+            <span className="handle-chevron">▶</span>
+          </div>
+        </div>
+
+        {/* Accessibility range slider */}
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={sliderPos}
+          onChange={e=>setSliderPos(Number(e.target.value))}
+          aria-label="Color grade comparison slider"
+          className="grading-range-input"
+        />
+      </div>
+
+      <div className="grading-scene-info">
+        <div>
+          <span className="overline">{scene.location} · 4K DCI</span>
+          <h3>{scene.title}</h3>
+          <p>{scene.description}</p>
+        </div>
+        <div className="grading-highlights-block">
+          <span className="grading-notes-label">Color Science Highlights:</span>
+          <div className="grading-tags">
+            {scene.highlights.map(h=>(
+              <span key={h} className="grading-tag">✦ {h}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MoodboardCreator({user,settings}:{user:User;settings:typeof defaults}){
+  const [lighting,setLighting]=useState(moodboardData.lighting[0].id);
+  const [pacing,setPacing]=useState(moodboardData.pacing[0].id);
+  const [texture,setTexture]=useState(moodboardData.texture[0].id);
+  const [focus,setFocus]=useState(moodboardData.focus[0].id);
+  const [copied,setCopied]=useState(false);
+
+  const curLighting=moodboardData.lighting.find(x=>x.id===lighting)||moodboardData.lighting[0];
+  const curPacing=moodboardData.pacing.find(x=>x.id===pacing)||moodboardData.pacing[0];
+  const curTexture=moodboardData.texture.find(x=>x.id===texture)||moodboardData.texture[0];
+  const curFocus=moodboardData.focus.find(x=>x.id===focus)||moodboardData.focus[0];
+
+  const paletteMap:Record<string,{hex:string;name:string}[]>={
+    'l-golden':[
+      {hex:'#e8c88c',name:'Amber Gold'},
+      {hex:'#a5763f',name:'Burnt Ochre'},
+      {hex:'#3d2b1f',name:'Warm Umber'},
+      {hex:'#f4ebd0',name:'Champagne Sand'}
+    ],
+    'l-twilight':[
+      {hex:'#cfb58a',name:'Tungsten Glow'},
+      {hex:'#1e2838',name:'Indigo Twilight'},
+      {hex:'#0c131d',name:'Midnight Slate'},
+      {hex:'#e0dfdb',name:'Pale Silver'}
+    ],
+    'l-flora':[
+      {hex:'#bfa054',name:'Antique Brass'},
+      {hex:'#2d4739',name:'Palace Emerald'},
+      {hex:'#8a2b2b',name:'Heritage Crimson'},
+      {hex:'#f5f0e6',name:'Ivory Silk'}
+    ],
+    'l-monsoon':[
+      {hex:'#9ea7a4',name:'Mist Gray'},
+      {hex:'#343f3d',name:'Wet Moss'},
+      {hex:'#1a2221',name:'Deep Basalt'},
+      {hex:'#e2e7e5',name:'Raindrop Pearl'}
+    ]
+  };
+
+  const imageMap:Record<string,string>={
+    'l-golden':'/images/new-01.webp',
+    'l-twilight':'/images/new-10.webp',
+    'l-flora':'/images/new-08.webp',
+    'l-monsoon':'/images/new-06.webp'
+  };
+
+  const currentPalette=paletteMap[lighting]||paletteMap['l-golden'];
+  const currentImage=imageMap[lighting]||'/images/new-01.webp';
+
+  const dossierText=`✦ AURÉ STUDIO WEDDING MOODBOARD DOSSIER
+Aesthetic Archetype: ${curLighting.title} · ${curPacing.title}
+• Atmosphere & Light: ${curLighting.title} (${curLighting.desc})
+• Narrative Pacing: ${curPacing.title} (${curPacing.desc})
+• Visual Texture: ${curTexture.title} (${curTexture.desc})
+• Emotional Focus: ${curFocus.title} (${curFocus.desc})
+• Color Palette: ${currentPalette.map(p=>`${p.name} (${p.hex})`).join(', ')}`;
+
+  const copyDossier=async()=>{
+    try{
+      await navigator.clipboard.writeText(dossierText);
+      setCopied(true);
+      setTimeout(()=>setCopied(false),3000);
+    }catch(_){}
+  };
+
+  const bookingUrl=`/booking?service=Wedding%20stories&moodboard=${encodeURIComponent(dossierText)}`;
+
+  return (
+    <section className="section inner-page moodboard-page">
+      <div className="section-head">
+        <div>
+          <Eyebrow>INTERACTIVE CREATIVE STUDIO</Eyebrow>
+          <h1>Wedding Moodboard<br/><em>Studio & Dossier.</em></h1>
+        </div>
+        <div className="section-aside">
+          <p>Curate your celebration’s visual language. Select lighting, rhythm, film texture, and focal feeling to build an aesthetic dossier for our creative directors.</p>
+        </div>
+      </div>
+
+      <div className="moodboard-grid">
+        {/* Controls Column */}
+        <div className="moodboard-controls">
+          {/* 1. Lighting & Atmosphere */}
+          <div className="mb-control-group">
+            <div className="mb-group-head">
+              <span className="mb-step-num">01</span>
+              <div>
+                <h3>Lighting & Atmosphere</h3>
+                <p>The luminous environment of your celebration</p>
+              </div>
+            </div>
+            <div className="mb-options-grid">
+              {moodboardData.lighting.map(item=>(
+                <button
+                  type="button"
+                  key={item.id}
+                  className={`mb-card ${lighting===item.id?'selected':''}`}
+                  onClick={()=>setLighting(item.id)}
+                >
+                  <div className="mb-card-header">
+                    <span className="mb-card-title">{item.title}</span>
+                    <span className="mb-card-tag">{item.tag}</span>
+                  </div>
+                  <p className="mb-card-desc">{item.desc}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 2. Narrative Pacing */}
+          <div className="mb-control-group">
+            <div className="mb-group-head">
+              <span className="mb-step-num">02</span>
+              <div>
+                <h3>Narrative Pacing</h3>
+                <p>The musical heartbeat and tempo of your film</p>
+              </div>
+            </div>
+            <div className="mb-options-grid">
+              {moodboardData.pacing.map(item=>(
+                <button
+                  type="button"
+                  key={item.id}
+                  className={`mb-card ${pacing===item.id?'selected':''}`}
+                  onClick={()=>setPacing(item.id)}
+                >
+                  <div className="mb-card-header">
+                    <span className="mb-card-title">{item.title}</span>
+                    <span className="mb-card-tag">{item.tag}</span>
+                  </div>
+                  <p className="mb-card-desc">{item.desc}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 3. Visual Texture */}
+          <div className="mb-control-group">
+            <div className="mb-group-head">
+              <span className="mb-step-num">03</span>
+              <div>
+                <h3>Visual Texture</h3>
+                <p>The tactile finish, grain, and sensor medium</p>
+              </div>
+            </div>
+            <div className="mb-options-grid">
+              {moodboardData.texture.map(item=>(
+                <button
+                  type="button"
+                  key={item.id}
+                  className={`mb-card ${texture===item.id?'selected':''}`}
+                  onClick={()=>setTexture(item.id)}
+                >
+                  <div className="mb-card-header">
+                    <span className="mb-card-title">{item.title}</span>
+                    <span className="mb-card-tag">{item.tag}</span>
+                  </div>
+                  <p className="mb-card-desc">{item.desc}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 4. Emotional Focus */}
+          <div className="mb-control-group">
+            <div className="mb-group-head">
+              <span className="mb-step-num">04</span>
+              <div>
+                <h3>Emotional Focus</h3>
+                <p>The quiet moments our cameras will prioritize</p>
+              </div>
+            </div>
+            <div className="mb-options-grid">
+              {moodboardData.focus.map(item=>(
+                <button
+                  type="button"
+                  key={item.id}
+                  className={`mb-card ${focus===item.id?'selected':''}`}
+                  onClick={()=>setFocus(item.id)}
+                >
+                  <div className="mb-card-header">
+                    <span className="mb-card-title">{item.title}</span>
+                    <span className="mb-card-tag">{item.tag}</span>
+                  </div>
+                  <p className="mb-card-desc">{item.desc}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Sticky Canvas & Dossier */}
+        <div className="moodboard-preview-column">
+          <div className="moodboard-canvas">
+            <div className="canvas-header">
+              <span className="overline">BESPOKE AESTHETIC DOSSIER</span>
+              <h2>{curLighting.title.split(' ')[0]} <em>& {curPacing.title.split(' ')[0]}</em></h2>
+              <p className="canvas-subtitle">{curTexture.tag} · {curFocus.tag}</p>
+            </div>
+
+            <div className="canvas-media">
+              <img src={currentImage} alt="Moodboard aesthetic reference" loading="lazy"/>
+              <div className="canvas-media-overlay">
+                <span className="canvas-badge">AURÉ CURATED MOOD</span>
+                <span className="canvas-tagline">{curLighting.tag}</span>
+              </div>
+            </div>
+
+            <div className="canvas-palette">
+              <span className="palette-label">Film Color Science & Harmonized Swatches:</span>
+              <div className="swatches-row">
+                {currentPalette.map(p=>(
+                  <div key={p.hex} className="swatch-item">
+                    <span className="swatch-box" style={{backgroundColor:p.hex}}/>
+                    <small>{p.name}</small>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="canvas-treatment">
+              <span className="treatment-label">Creative Director’s Treatment Note:</span>
+              <p>
+                A visual tapestry steeped in {curLighting.desc.toLowerCase()}. Paced with {curPacing.desc.toLowerCase()}, textured through {curTexture.desc.toLowerCase()}, and centered upon {curFocus.desc.toLowerCase()}.
+              </p>
+            </div>
+
+            <div className="canvas-actions">
+              <a href={bookingUrl} className="button gold wide">
+                Apply moodboard to booking inquiry <ArrowRight size={16}/>
+              </a>
+              <button type="button" className="button outline wide" onClick={copyDossier}>
+                {copied?<><Check size={16}/> Copied dossier to clipboard!</>:<><Copy size={16}/> Copy aesthetic dossier text</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ClientProofingPortal({onOpenLightbox}:{onOpenLightbox:(item:Item)=>void}){
+  const [passcode,setPasscode]=useState('');
+  const [gallery,setGallery]=useState<ProofingGallery|null>(null);
+  const [error,setError]=useState('');
+  const [selectedIds,setSelectedIds]=useState<string[]>([]);
+  const [category,setCategory]=useState<string>('All');
+  const [isSubmitOpen,setIsSubmitOpen]=useState(false);
+  const [submitBusy,setSubmitBusy]=useState(false);
+  const [confirmation,setConfirmation]=useState<{code:string;count:number}|null>(null);
+
+  // Form states
+  const [clientName,setClientName]=useState('');
+  const [clientContact,setClientContact]=useState('');
+  const [shippingAddress,setShippingAddress]=useState('');
+  const [notes,setNotes]=useState('');
+
+  const unlockGallery=(code:string)=>{
+    const clean=code.trim().toUpperCase();
+    const g=proofingGalleries[clean];
+    if(g){
+      setGallery(g);
+      setPasscode(clean);
+      setError('');
+      setSelectedIds(g.photos.slice(0,3).map(p=>p.id));
+    }else{
+      setError('Invalid client passcode. Please check your gallery invitation or try a demo gallery below.');
+    }
+  };
+
+  const toggleSelect=(id:string)=>{
+    if(!gallery)return;
+    if(selectedIds.includes(id)){
+      setSelectedIds(selectedIds.filter(x=>x!==id));
+    }else{
+      if(selectedIds.length>=gallery.maxAlbumSelections){
+        alert(`You have reached the maximum album limit of ${gallery.maxAlbumSelections} photographs.`);
+        return;
+      }
+      setSelectedIds([...selectedIds,id]);
+    }
+  };
+
+  const handleDownloadList=()=>{
+    if(!gallery)return;
+    const text=`AURÉ STUDIO - ALBUM PROOFING SELECTION LIST\nCouple: ${gallery.couple}\nLocation: ${gallery.location}\nDate: ${gallery.eventDate}\nSelected Photos: ${selectedIds.length} / ${gallery.maxAlbumSelections}\n\nSelected Photo IDs:\n${selectedIds.join('\n')}\n\nGenerated on: ${new Date().toLocaleString()}`;
+    const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`Aure-Album-Selections-${gallery.passcode}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const submitSelections=async(e:FormEvent)=>{
+    e.preventDefault();
+    if(!gallery||!selectedIds.length)return;
+    setSubmitBusy(true);
+    try{
+      const d=await api('album-proofing',{
+        passcode:gallery.passcode,
+        couple:gallery.couple,
+        selections:selectedIds,
+        clientName,
+        clientContact,
+        shippingAddress,
+        notes
+      });
+      setConfirmation({code:d.confirmationCode,count:d.selectionsCount});
+    }catch(err){
+      alert((err as Error).message);
+    }finally{
+      setSubmitBusy(false);
+    }
+  };
+
+  if(!gallery){
+    return (
+      <section className="section inner-page proofing-page">
+        <div className="proofing-gate-card">
+          <div className="proofing-lock-icon">
+            <Lock size={32}/>
+          </div>
+          <Eyebrow>AURÉ PRIVATE CLIENT SUITE</Eyebrow>
+          <h1>Client Album<br/><em>Proofing Portal.</em></h1>
+          <p className="intro">
+            Welcome to your private album curation suite. Enter your gallery passcode from your delivery invitation to select your heirloom album photographs.
+          </p>
+
+          <form className="proofing-gate-form" onSubmit={e=>{e.preventDefault();unlockGallery(passcode);}}>
+            <div className="gate-input-wrap">
+              <input
+                type="text"
+                placeholder="ENTER GALLERY PASSCODE (e.g. RHEA2024)"
+                value={passcode}
+                onChange={e=>setPasscode(e.target.value)}
+                required
+                className="gate-input"
+              />
+              <button type="submit" className="button gold">
+                Access Gallery <ArrowRight size={16}/>
+              </button>
+            </div>
+            {error&&<p className="notice" role="alert">{error}</p>}
+          </form>
+
+          <div className="proofing-demo-shortcuts">
+            <span>Instant Demo Passcodes:</span>
+            <div className="demo-chips">
+              <button type="button" onClick={()=>unlockGallery('RHEA2024')}>Rhea & Rohan (RHEA2024)</button>
+              <button type="button" onClick={()=>unlockGallery('TANYA2024')}>Tanya & Kabir (TANYA2024)</button>
+              <button type="button" onClick={()=>unlockGallery('DEMO2025')}>Demo Gallery (DEMO2025)</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const allPhotos=gallery.photos;
+  const categories=['All',...new Set(allPhotos.map(p=>p.category)),'Favorites'];
+  const filteredPhotos=category==='All'
+    ? allPhotos
+    : category==='Favorites'
+    ? allPhotos.filter(p=>selectedIds.includes(p.id))
+    : allPhotos.filter(p=>p.category===category);
+
+  return (
+    <section className="section inner-page proofing-page">
+      {/* Gallery Header */}
+      <div className="proofing-hero">
+        <img src={gallery.coverImage} alt={gallery.couple} className="proofing-hero-bg"/>
+        <div className="proofing-hero-overlay">
+          <div className="proofing-hero-content">
+            <Eyebrow>PRIVATE HEIRLOOM ALBUM PROOFING</Eyebrow>
+            <h1>{gallery.couple}</h1>
+            <p>{gallery.location} · {gallery.eventDate}</p>
+            <div className="proofing-hero-meta">
+              <span>Passcode: <code>{gallery.passcode}</code></span>
+              <span>Total Photographs: <strong>{gallery.photos.length} frames</strong></span>
+              <button type="button" className="subtle-link" onClick={()=>setGallery(null)}>Change Gallery</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sticky Selection & Filter Bar */}
+      <div className="proofing-sticky-bar">
+        <div className="proofing-progress-wrap">
+          <div className="progress-labels">
+            <span>Album Selection Progress:</span>
+            <strong>{selectedIds.length} / {gallery.maxAlbumSelections} photos chosen</strong>
+          </div>
+          <div className="progress-track">
+            <div
+              className="progress-fill"
+              style={{width:`${Math.min(100,(selectedIds.length/gallery.maxAlbumSelections)*100)}%`}}
+            />
+          </div>
+        </div>
+
+        <div className="proofing-bar-actions">
+          <div className="proofing-filters">
+            {categories.map(c=>(
+              <button
+                key={c}
+                type="button"
+                className={`p-filter-btn ${category===c?'active':''}`}
+                onClick={()=>setCategory(c)}
+              >
+                {c==='Favorites'?`♥ Favorites (${selectedIds.length})`:c}
+              </button>
+            ))}
+          </div>
+
+          <div className="proofing-submit-buttons">
+            <button type="button" className="button outline" onClick={handleDownloadList} disabled={!selectedIds.length}>
+              <Download size={14}/> Download ID List
+            </button>
+            <button type="button" className="button gold" onClick={()=>setIsSubmitOpen(true)} disabled={!selectedIds.length}>
+              Submit Album Selections ({selectedIds.length}) <ArrowRight size={15}/>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Photo Proofing Grid */}
+      <div className="proofing-grid">
+        {filteredPhotos.map((photo)=>{
+          const isSelected=selectedIds.includes(photo.id);
+          const selIndex=selectedIds.indexOf(photo.id)+1;
+
+          return (
+            <article key={photo.id} className={`proofing-card ${isSelected?'selected':''}`}>
+              <div className="proofing-img-wrap">
+                <img src={photo.image} alt={photo.title} loading="lazy"/>
+                <button
+                  type="button"
+                  className={`heart-btn ${isSelected?'active':''}`}
+                  onClick={()=>toggleSelect(photo.id)}
+                  aria-label={isSelected?`Remove ${photo.title} from album`:`Add ${photo.title} to album`}
+                  title={isSelected?'Remove from album':'Select for album'}
+                >
+                  <Heart size={18} fill={isSelected?'currentColor':'none'}/>
+                </button>
+
+                {isSelected&&(
+                  <span className="selection-badge">#{selIndex}</span>
+                )}
+
+                <button
+                  type="button"
+                  className="proofing-zoom-btn"
+                  onClick={()=>onOpenLightbox({id:photo.id,title:photo.title,category:photo.category,image:photo.image,description:gallery.couple+' · '+photo.category,published:true,access:'public',kind:'image'})}
+                  aria-label="Inspect full resolution"
+                >
+                  <Eye size={16}/> Inspect
+                </button>
+              </div>
+
+              <div className="proofing-card-info">
+                <div>
+                  <span className="overline">{photo.category}</span>
+                  <h4>{photo.title}</h4>
+                </div>
+                <code className="photo-id-code">{photo.id}</code>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      {!filteredPhotos.length&&(
+        <div className="empty">
+          <Heart size={28}/>
+          <h3>No photographs found in this view.</h3>
+          <p>Switch to "All" or heart photos to add them to your favorites.</p>
+        </div>
+      )}
+
+      {/* Submit Album Dialog */}
+      {isSubmitOpen&&(
+        <Dialog label="Submit Heirloom Album Selections" onClose={()=>setIsSubmitOpen(false)}>
+          <div className="proofing-modal-content">
+            {confirmation?(
+              <div className="proofing-confirmation-cert">
+                <div className="cert-seal">
+                  <ShieldCheck size={36}/>
+                </div>
+                <Eyebrow>OFFICIAL ALBUM PROOFING SUBMISSION</Eyebrow>
+                <h2>Album Selections<br/><em>Confirmed & Recorded.</em></h2>
+                <p>Your {confirmation.count} selected heirloom photographs have been locked and dispatched to Auré Studio’s master design team.</p>
+
+                <div className="receipt-badge">
+                  <span>Confirmation Code</span>
+                  <code>{confirmation.code}</code>
+                </div>
+
+                <div className="cert-meta-grid">
+                  <div><span>Couple:</span><strong>{gallery.couple}</strong></div>
+                  <div><span>Passcode:</span><strong>{gallery.passcode}</strong></div>
+                  <div><span>Selected Frames:</span><strong>{confirmation.count} photographs</strong></div>
+                  <div><span>Shipping Address:</span><strong>{shippingAddress||'To be confirmed'}</strong></div>
+                </div>
+
+                <div className="cert-actions">
+                  <a
+                    className="button gold"
+                    href={`https://wa.me/919876543210?text=${encodeURIComponent(`Hello Auré Studio! I have submitted our wedding album selections under Confirmation #${confirmation.code} (${gallery.couple}).`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Confirm via WhatsApp <ArrowUpRight size={16}/>
+                  </a>
+                  <Button outline onClick={()=>{setIsSubmitOpen(false);setConfirmation(null);}}>
+                    Return to Gallery
+                  </Button>
+                </div>
+              </div>
+            ):(
+              <form className="proofing-submit-form" onSubmit={submitSelections}>
+                <Eyebrow>FINAL ALBUM SUBMISSION</Eyebrow>
+                <h2>Order Heirloom<br/><em>Italian Leather Album.</em></h2>
+                <p>You have curated <strong>{selectedIds.length} of {gallery.maxAlbumSelections}</strong> photographs for your physical album. Provide your delivery and embossing details below.</p>
+
+                <div className="form-row">
+                  <label>Your Name<input required value={clientName} onChange={e=>setClientName(e.target.value)} placeholder="Full Name"/></label>
+                  <label>Contact Phone or Email<input required value={clientContact} onChange={e=>setClientContact(e.target.value)} placeholder="Phone number or email"/></label>
+                </div>
+
+                <label>Physical Shipping Address (for Album Courier)<textarea rows={2} required value={shippingAddress} onChange={e=>setShippingAddress(e.target.value)} placeholder="Street address, apartment, city, state, pin code"/></label>
+
+                <label>Embossing Title & Cover Notes <span className="optional">optional</span>
+                  <textarea rows={2} value={notes} onChange={e=>setNotes(e.target.value)} placeholder="E.g. Gold foil cover text: 'Rhea & Rohan · Nov 2024'. Please make rhea-01 the full opening spread."/>
+                </label>
+
+                <div className="selected-summary-box">
+                  <span>Selected Photos ({selectedIds.length}):</span>
+                  <code>{selectedIds.join(', ')}</code>
+                </div>
+
+                <button type="submit" className="button gold wide" disabled={submitBusy}>
+                  {submitBusy?<LoaderCircle className="spin" size={17}/>:<>Lock & Submit Album Selections <Check size={16}/></>}
+                </button>
+              </form>
+            )}
+          </div>
+        </Dialog>
+      )}
+    </section>
+  );
+}
+
+function DateDepositModal({settings,onClose}:{settings:typeof defaults;onClose:()=>void}){
+  const [busy,setBusy]=useState(false);
+  const [error,setError]=useState('');
+  const [confirmed,setConfirmed]=useState<{receiptCode:string;amount:number}|null>(null);
+
+  const [clientName,setClientName]=useState('');
+  const [clientContact,setClientContact]=useState('');
+  const [targetDate,setTargetDate]=useState('');
+  const [location,setLocation]=useState('');
+
+  const amount=2500000; // ₹25,000
+
+  const handleDeposit=async(e:FormEvent)=>{
+    e.preventDefault();
+    setBusy(true);
+    setError('');
+
+    try{
+      const order=await api('deposit/order',{amount,clientName,clientContact,targetDate,location});
+
+      if(!order.demo&&order.key&&(window as any).Razorpay){
+        // Load razorpay checkout
+        const rzp=new (window as any).Razorpay({
+          key:order.key,
+          order_id:order.orderId,
+          amount:order.amount,
+          currency:order.currency,
+          name:'Auré Studio Date Hold',
+          description:`Wedding Date Hold Token (${targetDate})`,
+          handler:async(response:any)=>{
+            try{
+              const res=await api('deposit/verify',{
+                ...response,
+                clientName,
+                clientContact,
+                targetDate,
+                location,
+                amount
+              });
+              setConfirmed({receiptCode:res.receiptCode,amount});
+            }catch(err){
+              setError((err as Error).message);
+            }
+          },
+          prefill:{
+            name:clientName,
+            email:clientContact.includes('@')?clientContact:'',
+            contact:!clientContact.includes('@')?clientContact:''
+          }
+        });
+        rzp.open();
+      }else{
+        // Demo token simulation or direct fallback
+        const res=await api('deposit/verify',{
+          razorpay_order_id:order.orderId,
+          razorpay_payment_id:'pay_token_'+crypto.randomUUID().slice(0,8),
+          clientName,
+          clientContact,
+          targetDate,
+          location,
+          amount,
+          demo:true
+        });
+        setConfirmed({receiptCode:res.receiptCode,amount});
+      }
+    }catch(err){
+      setError((err as Error).message);
+    }finally{
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Dialog label="Reserve Wedding Date Hold Deposit" onClose={onClose}>
+      <div className="deposit-modal-wrap">
+        {confirmed?(
+          <div className="deposit-certificate">
+            <div className="cert-stamp">CALENDAR HOLD CONFIRMED</div>
+            <Eyebrow>OFFICIAL CALENDAR RESERVATION CERTIFICATE</Eyebrow>
+            <h2>Wedding Date<br/><em>Officially Reserved.</em></h2>
+            <p>Your calendar exclusivity token of <strong>₹25,000</strong> has been verified. The date is now held exclusively for you on Auré Studio’s master production schedule.</p>
+
+            <div className="receipt-badge">
+              <span>Deposit Reference Code</span>
+              <code>{confirmed.receiptCode}</code>
+            </div>
+
+            <div className="cert-meta-grid">
+              <div><span>Client:</span><strong>{clientName}</strong></div>
+              <div><span>Locked Event Date:</span><strong>{targetDate}</strong></div>
+              <div><span>Location:</span><strong>{location}</strong></div>
+              <div><span>Deposit Credited:</span><strong>₹25,000 (100% applied to package)</strong></div>
+            </div>
+
+            <div className="cert-actions">
+              <a
+                className="button gold"
+                href={`https://wa.me/${(settings.phone||'919876543210').replace(/\D/g,'')}?text=${encodeURIComponent(`Hello Auré Studio! I have confirmed our wedding date hold deposit #${confirmed.receiptCode} for ${targetDate} (${clientName}).`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Connect on WhatsApp <ArrowUpRight size={16}/>
+              </a>
+              <Button outline onClick={onClose}>
+                Close Certificate
+              </Button>
+            </div>
+          </div>
+        ):(
+          <form className="deposit-form" onSubmit={handleDeposit}>
+            <div className="deposit-form-head">
+              <Eyebrow>PRIORITY CALENDAR EXCLUSIVITY</Eyebrow>
+              <h2>Reserve Your Date<br/><em>Hold Deposit.</em></h2>
+              <p>Lock your wedding dates across India & worldwide with a ₹25,000 token deposit. 100% credited toward your final collection balance.</p>
+            </div>
+
+            <div className="deposit-perks">
+              <div className="perk-item">
+                <Check size={16}/>
+                <div>
+                  <strong>Calendar Exclusivity</strong>
+                  <small>Only one wedding team dispatched per weekend.</small>
+                </div>
+              </div>
+              <div className="perk-item">
+                <Check size={16}/>
+                <div>
+                  <strong>100% Package Credit</strong>
+                  <small>₹25,000 is directly credited toward your final package choice.</small>
+                </div>
+              </div>
+              <div className="perk-item">
+                <Check size={16}/>
+                <div>
+                  <strong>Creative Director Itinerary Session</strong>
+                  <small>Personal 1-on-1 moodboard and schedule alignment call.</small>
+                </div>
+              </div>
+            </div>
+
+            <div className="form-row">
+              <label>Couple / Client Name<input required value={clientName} onChange={e=>setClientName(e.target.value)} placeholder="E.g. Rhea & Rohan"/></label>
+              <label>Email or WhatsApp Phone<input required value={clientContact} onChange={e=>setClientContact(e.target.value)} placeholder="contact@example.com"/></label>
+            </div>
+
+            <div className="form-row">
+              <label>Wedding Date<input type="date" required min={new Date().toISOString().slice(0,10)} value={targetDate} onChange={e=>setTargetDate(e.target.value)}/></label>
+              <label>Destination / Venue<input required value={location} onChange={e=>setLocation(e.target.value)} placeholder="City, Hotel, or Resort"/></label>
+            </div>
+
+            {error&&<p className="notice" role="alert">{error}</p>}
+
+            <div className="deposit-checkout-footer">
+              <div className="deposit-amount-display">
+                <small>Hold Deposit Token</small>
+                <strong>₹25,000 <span>INR</span></strong>
+              </div>
+              <button type="submit" className="button gold" disabled={busy}>
+                {busy?<LoaderCircle className="spin" size={17}/>:<>Proceed to Lock Date <ArrowRight size={16}/></>}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </Dialog>
+  );
 }
