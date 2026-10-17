@@ -1,4 +1,4 @@
-import collectionImages from './collection-images.json';
+import collectionImages from './collection-images.json' with { type: 'json' };
 export type Item={id:string;kind:string;title:string;category:string;description:string;image:string;published?:boolean;access?:string;price?:number;youtube?:string;originalKey?:string;previewKey?:string;previewType?:string;previewSeconds?:number;duration?:string;rightsConfirmed?:boolean;inclusions?:string;enabled?:boolean;reference?:boolean;credit?:string};
 export const defaults={name:'Auré Studio',logoUrl:'',tagline:'Photography. Films. A feeling that stays.',email:'nirajpaul1991@gmail.com',phone:'+91 73670 50371',phoneSecondary:'+91 99424 19838',instagram:'',youtube:'',heroImage:'/images/hero-beach.webp',showAI:true,showStore:true,showReferences:true};
 export const references:Item[]=[
@@ -138,4 +138,159 @@ export const featuredStory = {
     }
   ]
 };
+
+export const moodboardData = {
+  lighting: [
+    { id: 'l-golden', title: 'Golden Hour Shoreline', desc: 'Warm amber backlit silhouettes, sun flares, soft coastal haze', tag: 'Warm Amber', colorSwatch: '#cfb58a', image: '/images/hero-beach.webp' },
+    { id: 'l-twilight', title: 'Twilight Lanterns & Candles', desc: 'Deep twilight sky, incandescent fairy lights, moody warm shadows', tag: 'Midnight & Gold', colorSwatch: '#8c6b4f', image: '/images/new-10.webp' },
+    { id: 'l-flora', title: 'Courtyard Sunlight & Florals', desc: 'Lush natural daylight, marigold yellows, vivid vibrant petals', tag: 'Bright Floral', colorSwatch: '#d4a359', image: '/images/new-08.webp' },
+    { id: 'l-monsoon', title: 'Moody Monsoon Coastal', desc: 'Atmospheric clouds, gentle rain reflections, soft cinematic greens', tag: 'Emerald & Sage', colorSwatch: '#617062', image: '/images/new-06.webp' }
+  ],
+  pacing: [
+    { id: 'p-poetic', title: 'Poetic & Contemplative', desc: 'Slow, lingering frames layered over acoustic spoken vows', tag: 'Soulful Slow' },
+    { id: 'p-joyful', title: 'Joyful & Celebratory', desc: 'Spontaneous candid laughter, dhol beats, dancing energy', tag: 'High Energy' },
+    { id: 'p-grand', title: 'Grand Royal Symphonic', desc: 'Sweeping drone compositions, palace architecture, cinematic crescendos', tag: 'Majestic Scale' }
+  ],
+  texture: [
+    { id: 't-35mm', title: 'Kodak 35mm Analog Warmth', desc: 'Subtle halation, organic film grain, timeless nostalgic pastels', tag: 'Analog Grain' },
+    { id: 't-4k', title: 'Crisp 4K Ultra-HDR Master', desc: 'Incredible detail, true deep blacks, vibrant edge-to-edge clarity', tag: 'Modern Cinema' },
+    { id: 't-vintage', title: 'Muted Editorial Velvet', desc: 'Understated contrast, warm skin tones, velvet shadows', tag: 'Fine-Art Editorial' }
+  ],
+  focus: [
+    { id: 'f-micro', title: 'Unspoken Micro-Moments', desc: 'Secret stolen glances, teary smiles, hands held softly', tag: 'Intimate Glances' },
+    { id: 'f-rituals', title: 'Sacred Rituals & Tradition', desc: 'The agni fire, phere vows, sindoor details, ancestral blessings', tag: 'Sacred Ceremonies' },
+    { id: 'f-portraits', title: 'Bespoke Couple Portraits', desc: 'Quiet private sessions away from crowds in cinematic landscape', tag: 'Editorial Vows' }
+  ]
+};
+
+export type ProofingPhoto = {
+  id: string;
+  title: string;
+  category: string;
+  image: string;
+};
+
+export type ProofingGallery = {
+  passcode: string;
+  couple: string;
+  location: string;
+  eventDate: string;
+  coverImage: string;
+  totalPhotos: number;
+  maxAlbumSelections: number;
+  photos: ProofingPhoto[];
+};
+
+export const proofingGalleries: Record<string, ProofingGallery> = {
+  'RHEA2024': {
+    passcode: 'RHEA2024',
+    couple: 'Rhea & Rohan',
+    location: 'The Oberoi Udaivilas, Udaipur',
+    eventDate: 'November 2024',
+    coverImage: '/images/new-01.webp',
+    totalPhotos: 24,
+    maxAlbumSelections: 80,
+    photos: [
+      { id: 'rhea-01', title: 'Evening warmth along the lake', category: 'Portraits', image: '/images/new-01.webp' },
+      { id: 'rhea-02', title: 'Laughter during the baraat', category: 'Rituals', image: '/images/new-09.webp' },
+      { id: 'rhea-03', title: 'Under the illuminated banyan', category: 'Reception', image: '/images/new-10.webp' },
+      { id: 'rhea-04', title: 'Golden hour vows by the shore', category: 'Portraits', image: '/images/new-07.webp' },
+      { id: 'rhea-05', title: 'A sacred promise held gently', category: 'Rituals', image: '/images/new-11.webp' },
+      { id: 'rhea-06', title: 'Sunlight and yellow marigolds', category: 'Rituals', image: '/images/new-08.webp' },
+      { id: 'rhea-07', title: 'Quiet pre-wedding reflections', category: 'Portraits', image: '/images/new-05.webp' },
+      { id: 'rhea-08', title: 'The night dance celebration', category: 'Reception', image: '/images/new-02.webp' },
+      { id: 'rhea-09', title: 'Rain-kissed coastal embrace', category: 'Portraits', image: '/images/new-06.webp' },
+      { id: 'rhea-10', title: 'Grand palace courtyards in dusk', category: 'Highlights', image: '/images/new-04.webp' },
+      { id: 'rhea-11', title: 'The morning bridal preparation', category: 'Highlights', image: '/images/wedding-1.jpg' },
+      { id: 'rhea-12', title: 'First look quiet tears', category: 'Highlights', image: '/images/wedding-2.jpg' }
+    ]
+  },
+  'TANYA2024': {
+    passcode: 'TANYA2024',
+    couple: 'Tanya & Kabir',
+    location: 'Cavelossim Beach, South Goa',
+    eventDate: 'December 2024',
+    coverImage: '/images/hero-beach.webp',
+    totalPhotos: 20,
+    maxAlbumSelections: 80,
+    photos: [
+      { id: 'tanya-01', title: 'Sunset coastal vows', category: 'Portraits', image: '/images/hero-beach.webp' },
+      { id: 'tanya-02', title: 'Morning haldi blessings', category: 'Rituals', image: '/images/new-08.webp' },
+      { id: 'tanya-03', title: 'Under glowing fairy lights', category: 'Reception', image: '/images/new-10.webp' },
+      { id: 'tanya-04', title: 'Barefoot walk along the sand', category: 'Highlights', image: '/images/new-05.webp' },
+      { id: 'tanya-05', title: 'A promise held gently', category: 'Rituals', image: '/images/new-11.webp' },
+      { id: 'tanya-06', title: 'Golden amber seaside portrait', category: 'Portraits', image: '/images/new-07.webp' },
+      { id: 'tanya-07', title: 'Fountain laughter in the sun', category: 'Highlights', image: '/images/new-09.webp' },
+      { id: 'tanya-08', title: 'Night dance with loved ones', category: 'Reception', image: '/images/new-02.webp' }
+    ]
+  },
+  'DEMO2025': {
+    passcode: 'DEMO2025',
+    couple: 'Sample Couple (Demo Gallery)',
+    location: 'Udaipur & Goa Heritage Showcase',
+    eventDate: 'Wedding Season 2025',
+    coverImage: '/images/hero-beach.webp',
+    totalPhotos: 12,
+    maxAlbumSelections: 80,
+    photos: [
+      { id: 'demo-01', title: 'Barefoot vows along the tide', category: 'Highlights', image: '/images/hero-beach.webp' },
+      { id: 'demo-02', title: 'Warmth in the evening light', category: 'Portraits', image: '/images/new-01.webp' },
+      { id: 'demo-03', title: 'Under the glowing banyan', category: 'Reception', image: '/images/new-10.webp' },
+      { id: 'demo-04', title: 'Golden horizon vows', category: 'Highlights', image: '/images/new-07.webp' },
+      { id: 'demo-05', title: 'Haldi laughter and marigolds', category: 'Rituals', image: '/images/new-08.webp' },
+      { id: 'demo-06', title: 'A promise held gently', category: 'Rituals', image: '/images/new-11.webp' },
+      { id: 'demo-07', title: 'Laughter and sunlight fountain', category: 'Highlights', image: '/images/new-09.webp' },
+      { id: 'demo-08', title: 'Serenity by the coastal tide', category: 'Portraits', image: '/images/new-05.webp' },
+      { id: 'demo-09', title: 'Night lights and laughter', category: 'Reception', image: '/images/new-02.webp' },
+      { id: 'demo-10', title: 'Reflections in the gentle rain', category: 'Portraits', image: '/images/new-06.webp' },
+      { id: 'demo-11', title: 'Traditional afternoon grace', category: 'Rituals', image: '/images/new-08.webp' },
+      { id: 'demo-12', title: 'Where dreams take flight', category: 'Highlights', image: '/images/new-03.webp' }
+    ]
+  }
+};
+
+export type ColorGradingScene = {
+  id: string;
+  title: string;
+  location: string;
+  image: string;
+  description: string;
+  logLabel: string;
+  gradeLabel: string;
+  highlights: string[];
+};
+
+export const colorGradingScenes: ColorGradingScene[] = [
+  {
+    id: 'beach-sunset',
+    title: 'Coastal Sunset Vows',
+    location: 'South Goa Shoreline',
+    image: '/images/hero-beach.webp',
+    description: 'Balancing extreme sunset dynamic range, preserving highlights in white attire while warming natural skin tones.',
+    logLabel: '10-Bit S-Log3 / Flat Sensor RAW',
+    gradeLabel: 'Auré Kodak Gold Cinema Master',
+    highlights: ['Natural Golden Amber Skin Tones', 'Retained Ocean Horizon Dynamic Range', 'Gentle Highlight Halation']
+  },
+  {
+    id: 'twilight-banyan',
+    title: 'Twilight Fairy Lights & Banyan',
+    location: 'Heritage Courtyard',
+    image: '/images/new-10.webp',
+    description: 'Elevating deep night shadows, preserving warm 2800K incandescent sparkle without blowing out string lights.',
+    logLabel: 'Low-Light High ISO Camera RAW',
+    gradeLabel: 'Auré Tungsten Glow Film Grade',
+    highlights: ['Lush Warm Tungsten Contrast', 'Clean Micro-Noise Reduction', 'Luminescent Foliage Separation']
+  },
+  {
+    id: 'haldi-sun',
+    title: 'Morning Haldi & Yellow Flora',
+    location: 'Palace Courtyard',
+    image: '/images/new-08.webp',
+    description: 'Calibrating vibrant yellow marigolds and turmeric powder to look rich and cinematic without oversaturating skin.',
+    logLabel: 'Midday Harsh Sunlight RAW',
+    gradeLabel: 'Auré Daylight Pastel Harmony',
+    highlights: ['Calibrated Marigold Yellows', 'Softened Direct Sun Contrast', 'True Skin Pigment Fidelity']
+  }
+];
+
 
