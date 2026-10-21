@@ -1097,7 +1097,7 @@ function ClientProofingPortal({onOpenLightbox}:{onOpenLightbox:(item:Item)=>void
             <div className="gate-input-wrap">
               <input
                 type="text"
-                placeholder="ENTER GALLERY PASSCODE (e.g. RHEA2024)"
+                placeholder="ENTER PRIVATE GALLERY PASSCODE"
                 value={passcode}
                 onChange={e=>setPasscode(e.target.value)}
                 required
@@ -1109,15 +1109,6 @@ function ClientProofingPortal({onOpenLightbox}:{onOpenLightbox:(item:Item)=>void
             </div>
             {error&&<p className="notice" role="alert">{error}</p>}
           </form>
-
-          <div className="proofing-demo-shortcuts">
-            <span>Instant Demo Passcodes:</span>
-            <div className="demo-chips">
-              <button type="button" onClick={()=>unlockGallery('RHEA2024')}>Rhea & Rohan (RHEA2024)</button>
-              <button type="button" onClick={()=>unlockGallery('TANYA2024')}>Tanya & Kabir (TANYA2024)</button>
-              <button type="button" onClick={()=>unlockGallery('DEMO2025')}>Demo Gallery (DEMO2025)</button>
-            </div>
-          </div>
         </div>
       </section>
     );
